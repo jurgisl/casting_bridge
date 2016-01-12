@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block container %}
+
+        <div class="section">
+          <div class="container">
+
+            <div class="row">
+              <div class="col-md-12">
+                <h1 class="text-center">Profili</h1>
+                <!--p class="text-center"></p-->
+                <!--p class="text-center">{{ profiles.pages }}</p>
+                <p class="text-center">{{ profiles.per_page }}</p-->
+              </div>
+            </div>
+
+            <div class="row">
+              <form method="GET"
+                    action="{{ url_for('catalog.profiles') }}"
+                    role="form"
+                    enctype="multipart/form-data">
+                  <div class="col-md-2"></div>
+                  <div class="col-md-2"></div>
+                  <div class="col-md-2">
+                    <input type="text" name="name" id="name" class="form-control" aria-label="..." placeholder="Vārds">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" name="surname" id="surname" class="form-control" aria-label="..." placeholder="Uzvārds">
+                  </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-default">Meklēt</button>
+                  </div>
+              </form>
+            </div>
+            <br>
+
+            <div class="row">
+            {% for profile in profiles.items %}
+
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalog.update_profile', id=profile.id) }}">
+                    {% if profile.profile_image is not none %}
+                        <img src="{{ url_for('static', filename='uploads/' + profile.profile_image) }}" class="center-block img-circle img-responsive">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/user_placeholder.jpg') }}" class="center-block img-circle img-responsive">
+                    {%endif %}
+                    <h3 class="text-center">{{ profile.name }}</h3>
+                    <p class="text-center">ID-{{ profile.id }}</p>
+                    </a>
+                </div>
+                <!--p class="text-center">{{ loop.index }}</p-->
+
+            {% if loop.index is divisibleby 4 %}
+            </div> <!-- end row-->
+            <div class="row">
+            {% endif %}
+
+            {% endfor %}
+            </div> <!-- end row-->
+
+            <div class="container">
+                <div class="col-md-12 col-md-offset-5">
+                {% if profiles.has_prev %}
+                  <a href="{{ url_for('catalog.profiles', page=profiles.prev_num) }}">
+                    {{"<< Iepriekšējā lapa"}}
+                  </a>
+                {% else %}
+                  {{"<< Iepriekšējā lapa"}}
+                {% endif %} |
+                {% if profiles.has_next %}
+                  <a href="{{ url_for('catalog.profiles', page=profiles.next_num) }}">
+                    {{"Nākošā lapa >>"}}
+                  </a>
+                {% else %}
+                  {{"Nākošā lapa >>"}}
+                {% endif %}
+                </div>
+            </div>
+
+          </div>
+        </div>
+
+    <script type="text/javascript">
+
+
+
+    </script>
+
+{% endblock %}

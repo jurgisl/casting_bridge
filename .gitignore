@@ -1,0 +1,16 @@
+# Basics
+*.py[cod]
+*.pyc
+*.db
+*.sublime-workspace
+*.sublime-project
+__pycache__
+
+# Logs
+
+# virtual environments
+.env
+
+# Uploads
+casting_bridge/static/uploads/*
+

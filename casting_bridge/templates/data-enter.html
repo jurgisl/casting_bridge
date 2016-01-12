@@ -1,0 +1,1197 @@
+{% extends 'base.html' %}
+
+{% block container %}
+
+    <form method="POST"
+            action="{{ url_for('catalog.create_enter') }}"
+            role="form"
+            enctype="multipart/form-data"
+            id="registrationForm" class="form-horizontal" role="form">
+        {{ form.csrf_token }}
+        <div class="section">
+          <div class="container">
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="well">
+                    <h3><i class="fa fa-user fa-fw"></i>Personas dati</h3>
+
+                    <div class="btn-group" data-toggle="buttons">
+                      <!--label class="btn btn-default">
+                        <input type="radio" name="species" id="option1" autocomplete="off" value="man">Vīrietis
+                      </label>
+                      <label class="btn btn-default">
+                        <input type="radio" name="species" id="option2" autocomplete="off" value="woman">Sieviete
+                      </label-->
+                      {{ form.species() }}
+                    </div>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <!--{{ form.name.label(class="control-label") }}--><br> {{ form.name(class="form-control", placeholder="Vārds*", maxlength=255) }}<br>
+                            {{ form.surname(class="form-control", placeholder="Uzvārds*", maxlength=255) }}<br>
+                            {{ form.nickname(class="form-control", placeholder="Skatuves vārds", maxlength=255) }}<br>
+                            {{ form.pcode(class="form-control", placeholder="Personas kods", maxlength=255) }}<br>
+                            {{ form.passport_nr(class="form-control", placeholder="Pases numurs", maxlength=255) }}
+                        <div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <!--label for="dtp_input2" class="col-md-4 control-label">Date Picking</label-->
+                            <div class="input-group date form_date col-md-12" data-date="">
+                                {{ form.birthdate(class="form-control", placeholder="Dzimšanas diena*") }}
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!--label class="control-label col-lg-6">Dzimšanas datums</label-->
+                    <!--div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                        {{ form.birthdate(class="form-control", placeholder="Dzimšanas datums*") }}
+                    </div-->
+
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="well">
+                    <h3><i class="fa fa-users fa-fw"></i> Ģimene</h3>
+                    <p id="age_control">Personām, jaunākām par 18. gadiem norādīt arī vecāku vārdu uzvārdu un tālruņa numuru.</p>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                                {{ form.mother_name(class="form-control", placeholder="Mātes vārds/uzvārds", maxlength=255) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{ form.mother_phone_code(class="form-control", placeholder="", value="371", maxlength=3) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group">
+                                {{ form.mother_phone(class="form-control", placeholder="Mātes tel. nr.", maxlength=255) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                                {{ form.father_name(class="form-control", placeholder="Tēva vārds/uzvārds", maxlength=255) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{ form.father_phone_code(class="form-control", placeholder="", value="371", maxlength=3) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group">
+                                {{ form.father_phone(class="form-control", placeholder="Tēva tel. nr.", maxlength=255) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <h3><i class="fa fa-phone fa-fw"></i>Kontaktinformācija</h3>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{ form.my_phone_code(class="form-control", placeholder="", value="371", maxlength=3) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                                {{ form.my_phone(class="form-control", placeholder="Telefona numurs*", maxlength=255) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{ form.other_phone_code(class="form-control", placeholder="", value="371", maxlength=3) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                                {{ form.other_phone(class="form-control", placeholder="Drošības tālrunis", maxlength=255) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-11">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-at"></i>
+                                </span>
+                                {{ form.email(class="form-control", placeholder="E-pasts*", maxlength=255) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-envelope-o"></i>
+                                </span>
+                                {{ form.home_address(class="form-control", placeholder="Dzīvesvietas adrese*", maxlength=255) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <!--span class="input-group-addon">
+                                    <i class="fa fa-fort-awesome"></i>
+                                </span-->
+                                {{ form.city(class="form-control search_selectpicker", title='Tuvākā pilsēta*') }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-eye fa-fw"></i>Personīgās īpašības</h3>
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            {{ form.height(class="form-control", placeholder="Augums centimetros", maxlength=3) }}<br>
+                            {{ form.foot_size(class="form-control selectpicker", title="Apavu izmērs") }}
+
+                            <label class="control-label">Izmēru tabula</label>
+                            <a href="#man_sizeModal" data-toggle="modal">vīriešiem</a> /
+                            <a href="#woman_sizeModal" data-toggle="modal">sievietēm</a>
+                            <br>
+                            {{ form.cloth_size(class="form-control search_selectpicker", title='Apģērba izmērs EU') }}<br><br>
+
+                            {{ form.voice(class="form-control selectpicker", title='Balss tembrs') }}<br><br>
+
+                            {{ form.race(class="form-control", placeholder="Rase", maxlength=255) }}<br>
+                            {{ form.haircolor(class="form-control selectpicker", title='Matu krāsa*') }}<br><br>
+                            {{ form.eyecolor(class="form-control selectpicker", title='Acu krāsa*') }}
+                        </div>
+                    </fieldset>
+                </div>
+              </div>
+              <!--div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-star fa-fw"></i>Kas tu esi?</h3>
+                    <p>Izvēlies vienu no opcijām un aizpildi to</p>
+                    <div class="input-group">
+                      <span class="input-group-addon">
+                        <input type="radio" id="whoypuare1" name="whoypuare" aria-label="...">
+                      </span>
+                      <input type="text" name="actor" id="actor" class="form-control" aria-label="..." placeholder="Aktieris" disabled>
+                    </div>
+                    <br>
+                    <div class="input-group">
+                      <span class="input-group-addon">
+                        <input type="radio" id="whoypuare2" name="whoypuare" aria-label="...">
+                      </span>
+                      <input type="text" name="professional" id="professional" class="form-control" aria-label="..." placeholder="Profesionālis" disabled>
+                    </div>
+                    <br>
+                    <div class="input-group">
+                      <span class="input-group-addon">
+                        <input type="radio" id="whoypuare3" name="whoypuare" aria-label="...">
+                      </span>
+                      <input type="text" name="talent" id="talent" class="form-control" aria-label="..." placeholder="Talants" disabled>
+                    </div>
+                </div>
+              </div-->
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-star fa-fw"></i>Kas tu esi?</h3>
+                    <p>Izvēlies tikai vienu no opcijām</p>
+
+                    <div class="btn-group" data-toggle="buttons">
+                      <!--label class="btn btn-default">
+                        <input type="radio" name="speciality" id="option1" autocomplete="off" value="actor">Aktieris
+                      </label>
+                      <label class="btn btn-default">
+                        <input type="radio" name="speciality" id="option2" autocomplete="off" value="professional">Profesionālis
+                      </label>
+                      <label class="btn btn-default">
+                        <input type="radio" name="speciality" id="option3" autocomplete="off" value="talent">Talants
+                      </label-->
+                      {{ form.speciality() }}
+                    </div>
+
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <br>{{ form.subspeciality(class="form-control", placeholder="specializācija") }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <label class="control-label" for="experience">Filmēšanās pieredze</label>
+                                {{ form.experience(class="form-control", placeholder="Konkrēti piemēri un lomas (filmas, reklāmas, TV, u.c)", rows="10", maxlength=1000) }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <label class="control-label" for="experience">CV (doc vai pdf formātā)</label>
+                                <br>{{ form.cv(style='display:inline;') }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-music fa-fw"></i>Prasmes</h3>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <!--select multiple name="danceskill" id="danceskill" data-role="tagsinput" placeholder="deju veidi"></select-->
+                            <label class="control-label" for="danceskill">Dejotprasme</label><br>{{ form.danceskill(placeholder="deju veidi") }}<br>
+                            <label class="control-label" for="singskill">Dziedātprasme</label><br>{{ form.singskill(placeholder="koris, grupa, solo") }}<br>
+                            <label class="control-label" for="musicskill">Mūzikas instrumenti</label><br>{{ form.musicskill() }}<br>
+                            <label class="control-label" for="sportskill">Sporta veidi</label><br>{{ form.sportskill() }}<br>
+                            <label class="control-label" for="swimskill">Peldētprasme</label><br>{{ form.swimskill(placeholder="novērtē no 1 - 10") }}<br>
+                            <label class="control-label" for="driveskill">Transportlīdzekļa vadīšana</label><br>{{ form.driveskill() }}<br>
+                            <label class="control-label" for="languageskill">Valodu zināšanas</label><br>{{ form.languageskill() }}<br>
+                            <label class="control-label" for="otherskill">Citas prasmes</label><br>{{ form.otherskill() }}
+                        </div>
+                    </fieldset>
+
+
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-university fa-fw"></i>Darbs un izglītība</h3>
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <label class="control-label" for="want_participate">Mācību iestāde</label><br>{{ form.educational_institution() }}<br>
+                            <label class="control-label" for="want_participate">Apgūtā profesija</label><br>{{ form.learned_profession() }}<br>
+                            <label class="control-label" for="want_participate">Klase vai līmenis</label><br>{{ form.degree() }}<br><br>
+                            {{ form.current_occupation(class="form-control selectpicker", title='Pašreizējā nodarbošanās') }}<br><br>
+                            {{ form.workplace(class="form-control", placeholder="Darba vieta", maxlength=255) }}<br>
+                        </div>
+                    </fieldset>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-list-ol fa-fw"></i>Manas vēlmes</h3>
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <label class="control-label" for="want_participate">Gribu piedalīties</label><br>{{ form.want_participate() }}<br>
+                            <label class="control-label" for="dont_want_participate">Negribu piedalīties</label><br>{{ form.dont_want_participate() }}<br>
+                            <label class="control-label" for="interested_in">Mani interesē</label><br>{{ form.interested_in() }}
+                        </div>
+                    </fieldset>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-book fa-fw"></i>Piezīmes, ko jāņem vērā</h3>
+                    <p>{{ form.contact_lenses }} Kontaktlēcas</p>
+                    <p>{{ form.be_dressed }} Nevēlos atkailināties kameras priekšā</p>
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <label class="control-label" for="tattoo">Tetovējumi</label><br>{{ form.tattoo() }}<br>
+                            <label class="control-label" for="piercing">Pīrsingi</label><br>{{ form.piercing() }}<br>
+                            <label class="control-label" for="afraidof">Bailes no</label><br>{{ form.afraidof() }}<br>
+                            <label class="control-label" for="religion">Reliģiskā pārliecība</label><br>{{ form.religion() }}
+                        </div>
+                    </fieldset>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                    <!-- empty -->
+              </div>
+              <div class="col-md-4">
+                    <!-- empty -->
+              </div>
+              <div class="col-md-4">
+                <div class="well">
+                    <h3><i class="fa fa-picture-o fa-fw"></i>Bildes</h3>
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <label class="control-label" for="profile_image">Profila bilde</label>: {{ form.profile_image(style='display:inline;') }}<br>
+                            <label class="control-label" for="image1">Bilde Nr.1</label>: {{ form.image1(style='display:inline;') }}<br>
+                            <label class="control-label" for="image2">Bilde Nr.2</label>: {{ form.image2(style='display:inline;') }}
+                        </div>
+                    </fieldset>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="well">
+
+
+                    <!--fieldset class="form-group">
+                        <div class="col-lg-9">
+                            <div class="input-group">
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <input type="checkbox" id="chkterms" class="" "/> Terms & Conditions
+                                <button type="submit" class="btn btn-primary " name="submit" value="Submit" id="btncheck" disabled>Iesniegt</button>
+                            </div>
+                        </div>
+                    </fieldset-->
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-11">
+                            <div class="input-group">
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="input-group">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#termsModal" data-whatever="@getbootstrap">Iesniegt</button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                      <!--button type="submit" class="btn btn-default pull-right" disabled>Iesniegt</button-->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="termsModalLabel">Līgums</h4>
+              </div>
+              <div class="modal-body">
+                Ar šo izsaku savu pikrišanu, ka SIA"CASTING BRIDGE", vienotais reģistrācijas numurs:40103389862,
+                iekļauj, uzglabā un apstrādā savā datu bāzē manus fiziskās personas datus. Esmu informēts, ka minētās
+                darbības nepieciešamas, lai piedāvātu manus pakalpojumus trešajām personām. Piekrītu, ka manis
+                sniegtā informācija atlases un pakalpojumu sniegšanas gaitā tiks sniegta trešajām personām,
+                kuras ir ieinteresētas minēto pakalpojumu pirkšanā.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Aizvērt</button>
+                <input type="checkbox" id="chkterms"/> Piekrītu
+                <button type="submit" class="btn btn-primary" id="btncheck" disabled>Apstiprināt</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="man_sizeModal" tabindex="-1" role="dialog" aria-labelledby="man_sizeModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="man_sizeModalLabel">Vīriešu izmēri</h4>
+              </div>
+              <div class="modal-body">
+                <img src="{{ url_for('static', filename='img/man_eur.png') }}" class="img-responsive">
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="woman_sizeModal" tabindex="-1" role="dialog" aria-labelledby="woman_sizeModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="man_sizeModalLabel">Sieviešu izmēri</h4>
+              </div>
+              <div class="modal-body">
+                <img src="{{ url_for('static', filename='img/woman_eur.png') }}" class="img-responsive">
+              </div>
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </form>
+
+    <script type="text/javascript">
+
+    $(function() {
+        $('#chkterms').click(function() {
+            if ($('#chkterms').is(':checked')) {
+                $("#btncheck").prop('disabled', false);
+            }
+            else {
+                $("#btncheck").prop('disabled', true);
+            }
+        })
+    })
+
+    /*$(document).ready(function() {
+        $('#birthdate').daterangepicker({
+          singleDatePicker: true,
+          showDropdowns: true//,
+          //startDate: moment().subtract(0, 'days')
+        },
+        function(start, end, label) {
+            var years = moment().diff(start, 'years');
+            if (years < 18) {
+                //alert("You are " + years + " years old.");
+                document.getElementById("age_control").style.color = "red";
+            } else {
+                document.getElementById("age_control").style.color = "black";
+            }
+        });
+    });*/
+
+    $(".form_date").datetimepicker({
+        format: "mm/dd/yyyy",
+        language:  'lv',
+        startView: 4,
+        fontAwesome: 1,
+        minView: 2,
+        forceParse: 0,
+        autoclose: true
+    }).on('changeDate', function(ev){
+        //alert("valueOf"  );
+    });
+
+    $('.search_selectpicker').selectpicker({
+        size: 8,
+        //maxOptions: 1,
+        //doneButton: true,
+        //doneButtonText: 'Aizvērt',
+        liveSearch: true
+    });
+
+    $('.clothe_selectpicker').selectpicker({
+        size: 8,
+        //maxOptions: 1,
+        //doneButton: true,
+        //doneButtonText: 'Aizvērt',
+        liveSearch: true
+    });
+
+    // unselect period when mode is selected
+    /*$("#whoypuare1").on('click',function(){
+      $("#actor").prop('disabled', false);
+      $("#professional").prop('disabled', true);
+      $("#professional").prop('value', "");
+      $("#talent").prop('disabled', true);
+      $("#talent").prop('value', "");
+    });
+    $("#whoypuare2").on('click',function(){
+      $("#actor").prop('disabled', true);
+      $("#actor").prop('value', "");
+      $("#professional").prop('disabled', false);
+      $("#talent").prop('disabled', true);
+      $("#talent").prop('value', "");
+    });
+    $("#whoypuare3").on('click',function(){
+      $("#actor").prop('disabled', true);
+      $("#actor").prop('value', "");
+      $("#professional").prop('disabled', true);
+      $("#professional").prop('value', "");
+      $("#talent").prop('disabled', false);
+    });*/
+
+    var subspeciality = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: {
+            url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"subspeciality"}]}',
+            cache : false,
+            filter: function(list) {
+              return $.map(list.objects, function(classifier) {
+                //console.log(classifier.tag_lv)
+                //if (classifier.category == 'otherskill')
+                    return { name: classifier.tag_lv, id: classifier.id };
+              });
+            }
+        }
+    });
+    subspeciality.initialize();
+
+    function subspeciality_def(q, sync) {
+        if (q === '') {
+            sync(subspeciality.all()); // This is the only change needed to get 'ALL' items as the defaults
+        } else {
+            subspeciality.search(q, sync);
+        }
+    }
+
+    $('#subspeciality').tagsinput({
+        //itemValue: 'value',
+        //itemText: 'label',
+        freeInput: true,
+        trimValue: true,
+        typeaheadjs: [
+        {
+            hint: true,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            limit: 20,
+            source: subspeciality_def
+        }]
+    });
+
+    var danceskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"danceskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'danceskill')
+                return { name: classifier.tag_lv };
+          });
+        }
+      }
+    });
+    danceskill.initialize();
+
+    $('#danceskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'danceskill_pool',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: danceskill.ttAdapter(),
+            templates: {
+                empty: '<div class="empty-message">Nekas nav atrasts</div>'
+            }
+        }]
+    });
+
+    var singskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"singskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'singskill')
+                return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    singskill.initialize();
+
+    $('#singskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: singskill.ttAdapter(),
+            templates: {
+                empty: '<div class="empty-message">Nekas nav atrasts</div>'
+            }
+        }]
+    });
+
+    var musicskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"musicskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'musicskill')
+                return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    musicskill.initialize();
+
+    $('#musicskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: musicskill.ttAdapter()
+        }]
+    });
+
+    var sportskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"sportskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'sportskill')
+                return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    sportskill.initialize();
+
+    $('#sportskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: sportskill.ttAdapter()
+        }]
+    });
+
+    var swimskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"swimskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'swimskill')
+                return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    swimskill.initialize();
+
+    $('#swimskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      maxTags: 1,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: swimskill.ttAdapter()
+        }]
+    });
+
+    var driveskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"driveskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    driveskill.initialize();
+
+    $('#driveskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      maxTags: 1,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: driveskill.ttAdapter()
+        }]
+    });
+
+    var languageskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"languageskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    languageskill.initialize();
+
+    $('#languageskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: languageskill.ttAdapter()
+        }]
+    });
+
+    var otherskill = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"otherskill"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            //console.log(classifier.category)
+            //if (classifier.category == 'otherskill')
+                return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    otherskill.initialize();
+
+    $('#otherskill').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: otherskill.ttAdapter()
+        }]
+    });
+
+    // minLength: 0 is not helping to show all options on click
+    // see details in http://stackoverflow.com/questions/19797370/twitter-typeahead-js-show-all-options-when-click-focus
+    var want_participate = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        //identify: function(obj) { return obj.label; },
+        //local: want_participate
+        prefetch: {
+            url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"want_participate"}]}',
+            cache : false,
+            filter: function(list) {
+              return $.map(list.objects, function(classifier) {
+                //console.log(classifier.category)
+                //if (classifier.category == 'otherskill')
+                    return { name: classifier.tag_lv, id: classifier.id };
+              });
+            }
+        }
+    });
+    want_participate.initialize();
+
+    $('#want_participate').tagsinput({
+        //itemValue: 'name',
+        //itemText: 'label',
+        freeInput: true,
+        trimValue: true,
+        typeaheadjs: [
+        {
+            hint: true,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: want_participate.ttAdapter()
+        }]
+    });
+
+    var dont_want_participate = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: {
+            url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"dont_want_participate"}]}',
+            cache : false,
+            filter: function(list) {
+              return $.map(list.objects, function(classifier) {
+                //console.log(classifier.category)
+                //if (classifier.category == 'otherskill')
+                    return { name: classifier.tag_lv, id: classifier.id };
+              });
+            }
+        }
+    });
+    dont_want_participate.initialize();
+
+    function dont_want_participate_def(q, sync) {
+        if (q === '') {
+            sync(dont_want_participate.all()); // This is the only change needed to get 'ALL' items as the defaults
+        } else {
+            dont_want_participate.search(q, sync);
+        }
+    }
+
+    $('#dont_want_participate').tagsinput({
+        //itemValue: 'value',
+        //itemText: 'label',
+        freeInput: true,
+        trimValue: true,
+        typeaheadjs: [
+        {
+            hint: true,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            limit: 20,
+            source: dont_want_participate_def
+        }]
+    });
+
+    var interested_in = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: {
+            url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"interested_in"}]}',
+            cache : false,
+            filter: function(list) {
+              return $.map(list.objects, function(classifier) {
+                //console.log(classifier.category)
+                //if (classifier.category == 'otherskill')
+                    return { name: classifier.tag_lv, id: classifier.id };
+              });
+            }
+        }
+    });
+    interested_in.initialize();
+
+    function interested_in_def(q, sync) {
+        if (q === '') {
+            sync(interested_in.all()); // This is the only change needed to get 'ALL' items as the defaults
+        } else {
+            interested_in.search(q, sync);
+        }
+    }
+
+    $('#interested_in').tagsinput({
+        //itemValue: 'value',
+        //itemText: 'label',
+        freeInput: false,
+        trimValue: true,
+        typeaheadjs: [
+        {
+            hint: true,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            limit: 20,
+            source: interested_in_def
+        }]
+    });
+
+    var tattoo = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"tattoo"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    tattoo.initialize();
+
+    $('#tattoo').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: tattoo.ttAdapter()
+        }]
+    });
+
+    var piercing = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"piercing"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    piercing.initialize();
+
+    $('#piercing').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: piercing.ttAdapter()
+        }]
+    });
+
+    var afraidof = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"afraidof"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    afraidof.initialize();
+
+    $('#afraidof').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: afraidof.ttAdapter()
+        }]
+    });
+
+    var religion = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"religion"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    religion.initialize();
+
+    $('#religion').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: religion.ttAdapter()
+        }]
+    });
+
+    var educational_institution = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"educational_institution"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    educational_institution.initialize();
+
+    $('#educational_institution').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: educational_institution.ttAdapter()
+        }]
+    });
+
+    var learned_profession = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"learned_profession"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    learned_profession.initialize();
+
+    $('#learned_profession').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: learned_profession.ttAdapter()
+        }]
+    });
+
+    var degree = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"degree"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    degree.initialize();
+
+    $('#degree').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: degree.ttAdapter()
+        }]
+    });
+
+
+
+    </script>
+
+{% endblock %}
