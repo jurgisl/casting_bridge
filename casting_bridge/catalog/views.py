@@ -15,6 +15,9 @@ import helpers
 
 catalog = Blueprint('catalog', __name__)
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.lower().rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def template_or_json(template=None):
     """"Return a dict from your view and this will either
@@ -552,11 +555,21 @@ def update_profile(id):
 
         db.session.commit()
 
-        helpers.file_upload('photo', 'image1', person.id)
-        helpers.file_upload('photo', 'image2', person.id)
-        helpers.file_upload('photo', 'image3', person.id)
-        helpers.file_upload('photo', 'image4', person.id)
-        helpers.file_upload('photo', 'image5', person.id)
+        files = request.files.getlist('images[]')
+        for file in files:
+            #flash('file: [%s]' % file.filename, 'success')
+            filename = ''
+            if file and allowed_file(file.filename):
+                filename = str(person.id) + "_" + secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                add_document = Document(datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
+                db.session.add(add_document)
+
+        #helpers.file_upload('photo', 'image1', person.id)
+        #helpers.file_upload('photo', 'image2', person.id)
+        #helpers.file_upload('photo', 'image3', person.id)
+        #helpers.file_upload('photo', 'image4', person.id)
+        #helpers.file_upload('photo', 'image5', person.id)
         helpers.file_upload('audio', 'audio', person.id)
         helpers.file_upload('video', 'video', person.id)
         profile_image = request.files['profile_image']

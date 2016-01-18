@@ -409,11 +409,15 @@
                     </fieldset>
                     <fieldset class="form-group">
                         <div class="col-lg-12">
-                            <label class="control-label" for="image1">Bilde Nr.1:</label><br> {{ form.image1(style='display:inline;') }}<br>
+                            <!--label class="control-label" for="image1">Bilde Nr.1:</label><br> {{ form.image1(style='display:inline;') }}<br>
                             <label class="control-label" for="image2">Bilde Nr.2:</label><br> {{ form.image2(style='display:inline;') }}
                             <label class="control-label" for="image3">Bilde Nr.3:</label><br> {{ form.image3(style='display:inline;') }}
                             <label class="control-label" for="image4">Bilde Nr.4:</label><br> {{ form.image4(style='display:inline;') }}
-                            <label class="control-label" for="image5">Bilde Nr.5:</label><br> {{ form.image5(style='display:inline;') }}
+                            <label class="control-label" for="image5">Bilde Nr.5:</label><br> {{ form.image5(style='display:inline;') }} -->
+
+                            <label class="control-label">Bildes</label><br>
+                            <input id="input-4" name="images[]" type="file" multiple class="file-loading">
+
                         </div>
                     </fieldset>
                     <fieldset class="form-group">
@@ -513,6 +517,9 @@
 
     <script type="text/javascript">
 
+    $(document).on('ready', function() {
+        $("#input-4").fileinput({showCaption: false});
+    });
 
 //    document.getElementById('links').onclick = function (event) {
 //        event = event || window.event;
