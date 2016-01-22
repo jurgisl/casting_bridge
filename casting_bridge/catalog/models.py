@@ -48,7 +48,7 @@ class Person(db.Model):
     surname = db.Column(db.String(255), index=True)
     nickname = db.Column(db.String(255))
     pcode = db.Column(db.String(255))
-    passport_nr = db.Column(db.String(255))
+    contract_nr = db.Column(db.String(255))
     birthdate = db.Column(db.String(255))
     my_phone_code = db.Column(db.String(255))
     my_phone = db.Column(db.String(255))
@@ -60,7 +60,6 @@ class Person(db.Model):
     foot_size = db.Column(db.Integer)
     cloth_size = db.Column(db.String(255))
     voice = db.Column(db.String(255))
-    race = db.Column(db.String(255))
     contact_lenses = db.Column(db.Boolean)
     be_dressed = db.Column(db.Boolean)
     profile_image = db.Column(db.String(255))
@@ -77,18 +76,20 @@ class Person(db.Model):
     cv = db.Column(db.String(255))
     current_occupation = db.Column(db.String(255))
     workplace = db.Column(db.String(255))
+    play_age_from = db.Column(db.Integer)
+    play_age_to = db.Column(db.Integer)
 
     skills = db.relationship('Skill', backref='person', lazy='dynamic')
     documents = db.relationship('Document', backref='document', lazy='dynamic')
 
-    def __init__(self, created=None, modified=None, name='', surname='', nickname='', pcode='', passport_nr='', birthdate='', my_phone_code='', my_phone='', email='', other_phone_code='', other_phone='', home_address='', height='', foot_size='', cloth_size='', voice='', race='', contact_lenses=False, be_dressed=False, profile_image=None, is_active=False, species='',mother_phone_code = '',mother_phone = '',mother_name = '',father_phone_code = '',father_phone = '',father_name = '',speciality = '',experience = '',cv=None, current_occupation=None, workplace=None):
+    def __init__(self, created=None, modified=None, name='', surname='', nickname='', pcode='', contract_nr='', birthdate='', my_phone_code='', my_phone='', email='', other_phone_code='', other_phone='', home_address='', height='', foot_size='', cloth_size='', voice='', contact_lenses=False, be_dressed=False, profile_image=None, is_active=False, species='',mother_phone_code = '',mother_phone = '',mother_name = '',father_phone_code = '',father_phone = '',father_name = '',speciality = '',experience = '',cv=None, current_occupation=None, workplace=None, play_age_from='', play_age_to=''):
         self.created = created
         self.modified = modified
         self.name = name
         self.surname = surname
         self.nickname = nickname
         self.pcode = pcode
-        self.passport_nr = passport_nr
+        self.contract_nr = contract_nr
         self.birthdate = birthdate
         self.my_phone_code = my_phone_code
         self.my_phone = my_phone
@@ -100,7 +101,6 @@ class Person(db.Model):
         self.foot_size = foot_size
         self.cloth_size = cloth_size
         self.voice = voice
-        self.race = race
         self.contact_lenses = contact_lenses
         self.be_dressed = be_dressed
         self.profile_image = profile_image
@@ -117,6 +117,8 @@ class Person(db.Model):
         self.cv = cv
         self.current_occupation = current_occupation
         self.workplace = workplace
+        self.play_age_from = play_age_from
+        self.play_age_to = play_age_to
 
     def __repr__(self):
         return '<Person %d>' % self.id
@@ -165,8 +167,10 @@ class BaseForm(Form):
     surname = TextField('Surname', validators=[InputRequired(),Length(max=255)])
     nickname = TextField('Nickname', validators=[Length(max=255)])
     pcode = TextField('ID code', validators=[Length(max=255)])
-    passport_nr = TextField('Passport nr.', validators=[Length(max=255)])
+    contract_nr = TextField('Passport nr.', validators=[Length(max=255)])
     birthdate = TextField('Birthdate', validators=[Length(max=255)])
+    play_age_from = TextField('Play age from', validators=[Length(max=2)])
+    play_age_to = TextField('Play age to', validators=[Length(max=2)])
 
     # Family
     mother_phone_code = TextField('Mother phone code', validators=[Length(max=255)])
@@ -190,7 +194,6 @@ class BaseForm(Form):
     foot_size = SelectFieldNoValidate('Foot size', choices=[])
     cloth_size = SelectFieldNoValidate('Cloth size', choices=[])
     voice = SelectFieldNoValidate('Voice', choices=[])
-    race = TextField('Race', validators=[Length(max=255)])
     haircolor = SelectField('Hair color', choices=[])
     eyecolor = SelectField('Eye color', choices=[])
 
@@ -240,14 +243,18 @@ class BaseForm(Form):
     image2 = FileField('Image No.2')
     profile_image = FileField('Profile image')
 
+    cb_tags = SelectMultipleFieldNoValidate('Casting bridge tags', choices=[])
+    family_notes = SelectMultipleFieldNoValidate('Family notes', choices=[])
+
+    video = FileField('Video')
+    audio = FileField('Audio')
+
 class UserForm(BaseForm):
     pass
 
 class UpdateForm(BaseForm):
-    cb_tags = SelectMultipleFieldNoValidate('Casting bridge tags', choices=[])
     image3 = FileField('Image No.3')
     image4 = FileField('Image No.4')
     image5 = FileField('Image No.5')
-    video = FileField('Video')
-    audio = FileField('Audio')
+
 

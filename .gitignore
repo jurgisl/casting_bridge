@@ -12,5 +12,5 @@ __pycache__
 .env
 
 # Uploads
-casting_bridge/static/uploads/*
+uploads/*
 

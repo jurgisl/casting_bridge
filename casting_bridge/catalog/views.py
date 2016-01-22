@@ -3,7 +3,7 @@ import os
 from functools import wraps
 from werkzeug import secure_filename
 from flask import request, Blueprint, render_template, jsonify, flash, \
-    redirect, url_for
+    redirect, url_for, send_from_directory, config
 from casting_bridge import db, app, ALLOWED_EXTENSIONS, manager, admin
 #from casting_bridge import manager
 from casting_bridge.catalog.models import Classifier, Person, Skill, Document, UserForm, SelectMultipleFieldNoValidate, UpdateForm
@@ -14,6 +14,10 @@ import pytz
 import helpers
 
 catalog = Blueprint('catalog', __name__)
+
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -102,7 +106,7 @@ def create_enter():
         surname = form.surname.data
         nickname = form.nickname.data
         pcode = form.pcode.data
-        passport_nr = form.passport_nr.data
+        contract_nr = form.contract_nr.data
         birthdate = form.birthdate.data
         my_phone_code = form.my_phone_code.data
         my_phone = form.my_phone.data
@@ -114,7 +118,6 @@ def create_enter():
         foot_size = form.foot_size.data
         cloth_size = form.cloth_size.data
         voice = form.voice.data
-        race = form.race.data
         contact_lenses = form.contact_lenses.data
         be_dressed = form.be_dressed.data
         species = form.species.data
@@ -131,7 +134,11 @@ def create_enter():
         eyecolor = form.eyecolor.data
         current_occupation = form.current_occupation.data
         workplace = form.workplace.data
-        person = Person(datetime.now(pytz.timezone("Europe/Riga")), datetime.now(pytz.timezone("Europe/Riga")), name, surname, nickname, pcode, passport_nr, birthdate, my_phone_code, my_phone, email, other_phone_code, other_phone, home_address, height, foot_size, cloth_size, voice, race, contact_lenses, be_dressed, None, False, species, mother_phone_code, mother_phone, mother_name, father_phone_code, father_phone, father_name, speciality, experience, None, current_occupation, workplace)
+        cb_tags = form.cb_tags.data
+        family_notes = form.family_notes.data
+        play_age_from = form.play_age_from.data
+        play_age_to = form.play_age_to.data
+        person = Person(datetime.now(pytz.timezone("Europe/Riga")), datetime.now(pytz.timezone("Europe/Riga")), name, surname, nickname, pcode, contract_nr, birthdate, my_phone_code, my_phone, email, other_phone_code, other_phone, home_address, height, foot_size, cloth_size, voice, contact_lenses, be_dressed, None, False, species, mother_phone_code, mother_phone, mother_name, father_phone_code, father_phone, father_name, speciality, experience, None, current_occupation, workplace, play_age_from, play_age_to)
         db.session.add(person)
         db.session.commit()
         skills = list()
@@ -202,6 +209,12 @@ def create_enter():
         for degree in form.degree.data:
             skills.append(['degree', degree])
 
+        for cb_tags in form.cb_tags.data:
+            skills.append(['cb_tags', cb_tags])
+
+        for family_notes in form.family_notes.data:
+            skills.append(['family_notes', family_notes])
+
         for skill in skills:
             #flash('Skills [%s] [%s]' % (skill[0], skill[1]), 'success')
             item = Classifier.query.filter_by(category=skill[0], tag_lv = skill[1].capitalize()).first()
@@ -214,8 +227,20 @@ def create_enter():
             db.session.add(add_skill)
             db.session.commit()
 
-        helpers.file_upload('photo', 'image1', person.id)
-        helpers.file_upload('photo', 'image2', person.id)
+        files = request.files.getlist('images[]')
+        for file in files:
+            #flash('file: [%s]' % file.filename, 'success')
+            filename = ''
+            if file and allowed_file(file.filename):
+                filename = str(person.id) + "_" + secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                add_document = Document(datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
+                db.session.add(add_document)
+
+        #helpers.file_upload('photo', 'image1', person.id)
+        #helpers.file_upload('photo', 'image2', person.id)
+        helpers.file_upload('audio', 'audio', person.id)
+        helpers.file_upload('video', 'video', person.id)
         profile_image = request.files['profile_image']
         cv = request.files['cv']
         filename = ''
@@ -260,7 +285,7 @@ def update_profile(id):
         surname=person.surname,
         nickname=person.nickname,
         pcode=person.pcode,
-        passport_nr=person.passport_nr,
+        contract_nr=person.contract_nr,
         birthdate=person.birthdate,
         my_phone=person.my_phone,
         email=person.email,
@@ -270,7 +295,6 @@ def update_profile(id):
         foot_size=person.foot_size,
         cloth_size=person.cloth_size,
         voice=person.voice,
-        race=person.race,
         contact_lenses=person.contact_lenses,
         be_dressed=person.be_dressed,
         mother_phone_code=person.mother_phone_code,
@@ -281,7 +305,9 @@ def update_profile(id):
         father_name=person.father_name,
         experience=person.experience,
         current_occupation = person.current_occupation,
-        workplace = person.workplace
+        workplace = person.workplace,
+        play_age_from = person.play_age_from,
+        play_age_to = person.play_age_to
     )
 
     if person.species:
@@ -400,6 +426,8 @@ def update_profile(id):
         form.current_occupation.choices = skill_box.get('voice')
     if skill_box.get('cb_tags'):
         form.cb_tags.choices = skill_box.get('cb_tags')
+    if skill_box.get('family_notes'):
+        form.family_notes.choices = skill_box.get('family_notes')
 
     photos = Document.query.filter_by(person_id=id, type='photo').paginate(1,100,error_out=False)
     #for photo in photos:
@@ -410,7 +438,7 @@ def update_profile(id):
         surname = form.surname.data
         nickname = form.nickname.data
         pcode = form.pcode.data
-        passport_nr = form.passport_nr.data
+        contract_nr = form.contract_nr.data
         birthdate = form.birthdate.data
         my_phone = form.my_phone.data
         email = form.email.data
@@ -420,7 +448,6 @@ def update_profile(id):
         foot_size = request.form['foot_size']
         cloth_size = request.form['cloth_size']
         voice = request.form['voice']
-        race = form.race.data
         contact_lenses = form.contact_lenses.data
         be_dressed = form.be_dressed.data
         # field is set from request.form['species'], because form.species.data is alredy set to (old)value from db
@@ -438,6 +465,8 @@ def update_profile(id):
         eyecolor = request.form['eyecolor']
         current_occupation = request.form['current_occupation']
         workplace = form.workplace.data
+        play_age_from = form.play_age_from.data
+        play_age_to = form.play_age_to.data
 
         Person.query.filter_by(id=id).update({
             'modified': datetime.now(pytz.timezone("Europe/Riga")),
@@ -445,7 +474,7 @@ def update_profile(id):
             'surname': surname,
             'nickname': nickname,
             'pcode': pcode,
-            'passport_nr': passport_nr,
+            'contract_nr': contract_nr,
             'birthdate': birthdate,
             'my_phone': my_phone,
             'email': email,
@@ -455,7 +484,6 @@ def update_profile(id):
             'foot_size': foot_size,
             'cloth_size': cloth_size,
             'voice': voice,
-            'race': race,
             'contact_lenses': contact_lenses,
             'be_dressed': be_dressed,
             'species': species,
@@ -468,7 +496,9 @@ def update_profile(id):
             'speciality': speciality,
             'experience': experience,
             'current_occupation': current_occupation,
-            'workplace': workplace
+            'workplace': workplace,
+            'play_age_from': play_age_from,
+            'play_age_to': play_age_to
         })
 
         skills = list()
@@ -540,6 +570,9 @@ def update_profile(id):
 
         for cb_tags in form.cb_tags.data:
             skills.append(['cb_tags', cb_tags])
+
+        for family_notes in form.family_notes.data:
+            skills.append(['family_notes', family_notes])
 
         # Delete outdated skills
         Skill.query.filter_by(person_id=id).delete()

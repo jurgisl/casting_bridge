@@ -40,7 +40,8 @@
                 <div class="col-md-3">
                     <a href="{{ url_for('catalog.update_profile', id=profile.id) }}">
                     {% if profile.profile_image is not none %}
-                        <img src="{{ url_for('static', filename='uploads/' + profile.profile_image) }}" class="center-block img-circle img-responsive">
+                        <img src="{{ url_for('download_file', filename=profile.profile_image) }}" class="center-block img-circle img-responsive">
+
                     {% else %}
                         <img src="{{ url_for('static', filename='img/user_placeholder.jpg') }}" class="center-block img-circle img-responsive">
                     {%endif %}

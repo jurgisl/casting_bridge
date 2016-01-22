@@ -7,8 +7,8 @@ from flask.ext.admin import Admin
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx','mov','mp4','mp3','wav'])
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + '/casting_bridge/static/uploads'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./cb.db'
+app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + '/uploads/'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../cb.db'
 app.config['WTF_CSRF_SECRET_KEY'] = 'random key for form'
 db = SQLAlchemy(app)
 manager = APIManager(app, flask_sqlalchemy_db=db)

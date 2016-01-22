@@ -18,7 +18,7 @@
                 {% for photo in photos.items %}
                     <div class="col-md-3">
                         <div class="thumbnail">
-                            <img src="{{ url_for('static', filename='uploads/' + photo.name) }}" class="img-responsive">
+                            <img src="{{ url_for('download_file', filename=photo.name) }}" class="img-responsive">
                             <p>{{ photo.created.strftime("%d-%m-%Y %H:%M:%S") }}</p>
                             <div class="caption">
                                 <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}">
@@ -80,7 +80,7 @@
                             {{ form.surname(class="form-control", placeholder="Uzvārds*", maxlength=255) }}<br>
                             {{ form.nickname(class="form-control", placeholder="Skatuves vārds", maxlength=255) }}<br>
                             {{ form.pcode(class="form-control", placeholder="Personas kods", maxlength=255) }}<br>
-                            {{ form.passport_nr(class="form-control", placeholder="Pases numurs", maxlength=255) }}
+                            {{ form.contract_nr(class="form-control", placeholder="Vienošanās numurs", maxlength=255) }}
                         <div>
                     </fieldset>
 
@@ -91,6 +91,20 @@
                                 {{ form.birthdate(class="form-control", placeholder="Dzimšanas diena*") }}
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <label class="control-label">Spēles vecums</label>
+                    <fieldset class="form-group">
+                        <div class="col-lg-2">
+                            <div class="input-group">
+                                {{ form.play_age_from(class="form-control", placeholder="no", maxlength=2) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="input-group">
+                                {{ form.play_age_to(class="form-control", placeholder="līdz", maxlength=2) }}
                             </div>
                         </div>
                     </fieldset>
@@ -147,6 +161,12 @@
                             <div class="input-group">
                                 {{ form.father_phone(class="form-control", placeholder="Tēva tel. nr.", maxlength=255) }}
                             </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        <div class="col-lg-12">
+                            <label class="control-label" for="family_notes">Piezīmes par ģimeni</label><br>{{ form.family_notes() }}<br>
                         </div>
                     </fieldset>
 
@@ -234,7 +254,6 @@
 
                             {{ form.voice(class="form-control selectpicker", title='Balss tembrs') }}<br><br>
 
-                            {{ form.race(class="form-control", placeholder="Rase", maxlength=255) }}<br>
                             {{ form.haircolor(class="form-control selectpicker", title='Matu krāsa*') }}<br><br>
                             {{ form.eyecolor(class="form-control selectpicker", title='Acu krāsa*') }}
                         </div>
@@ -309,7 +328,7 @@
                                 <label class="control-label" for="experience">CV (doc vai pdf formātā)</label>
                                 <br>{{ form.cv(style='display:inline;') }}
                                 {% if person.cv is not none %}
-                                     <br><br>Apskatīties CV: <a href="{{ url_for('static', filename='uploads/' + person.cv) }}">{{ person.cv }}</a>
+                                     <br><br>Apskatīties CV: <a href="{{ url_for('download_file', filename=person.cv) }}">{{ person.cv }}</a>
                                 {%endif %}
                             </div>
                         </div>
@@ -331,7 +350,7 @@
                             <label class="control-label" for="swimskill">Peldētprasme</label><br>{{ form.swimskill(placeholder="novērtē no 1 - 10") }}<br>
                             <label class="control-label" for="driveskill">Transportlīdzekļa vadīšana</label><br>{{ form.driveskill() }}<br>
                             <label class="control-label" for="languageskill">Valodu zināšanas</label><br>{{ form.languageskill() }}<br>
-                            <label class="control-label" for="otherskill">Citas prasmes</label><br>{{ form.otherskill() }}
+                            <label class="control-label" for="otherskill">Hobiji</label><br>{{ form.otherskill() }}
                         </div>
                     </fieldset>
 
@@ -394,7 +413,7 @@
                     <fieldset class="form-group">
                         <div class="col-lg-12">
                             <label class="control-label" for="cb_tags">CB birkas</label><br>{{ form.cb_tags() }}<br>
-                        <div>
+                        </div>
                     </fieldset>
                     <!-- empty -->
                 </div>
@@ -1264,6 +1283,37 @@
             displayKey: 'name',
             valueKey: 'name',
             source: cb_tags.ttAdapter()
+        }]
+    });
+
+    var family_notes = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: '/api/classifier?q={"filters":[{"name":"category","op":"eq","val":"family_notes"}]}',
+        cache : false,
+        filter: function(list) {
+          return $.map(list.objects, function(classifier) {
+            return { name: classifier.tag_lv, id: classifier.id };
+          });
+        }
+      }
+    });
+    family_notes.initialize();
+
+    $('#family_notes').tagsinput({
+      freeInput: true,
+      trimValue: true,
+      typeaheadjs: [
+        {
+            hint: true,
+            highlight: true
+        },
+        {
+            name: 'objects',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: family_notes.ttAdapter()
         }]
     });
 
