@@ -49,7 +49,8 @@ class Person(db.Model):
     nickname = db.Column(db.String(255))
     pcode = db.Column(db.String(255))
     contract_nr = db.Column(db.String(255))
-    birthdate = db.Column(db.String(255))
+    #birthdate = db.Column(db.String(255))
+    birthdate = db.Column(db.Date)
     my_phone_code = db.Column(db.String(255))
     my_phone = db.Column(db.String(255))
     email = db.Column(db.String(255))
@@ -168,7 +169,7 @@ class BaseForm(Form):
     nickname = TextField('Nickname', validators=[Length(max=255)])
     pcode = TextField('ID code', validators=[Length(max=255)])
     contract_nr = TextField('Passport nr.', validators=[Length(max=255)])
-    birthdate = TextField('Birthdate', validators=[Length(max=255)])
+    birthdate = DateField('Birthdate')
     play_age_from = TextField('Play age from', validators=[Length(max=2)])
     play_age_to = TextField('Play age to', validators=[Length(max=2)])
 

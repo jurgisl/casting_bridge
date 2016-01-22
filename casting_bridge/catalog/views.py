@@ -9,7 +9,8 @@ from casting_bridge import db, app, ALLOWED_EXTENSIONS, manager, admin
 from casting_bridge.catalog.models import Classifier, Person, Skill, Document, UserForm, SelectMultipleFieldNoValidate, UpdateForm
 from sqlalchemy.orm.util import join
 from flask.ext.admin.contrib.sqla import ModelView
-from datetime import datetime
+import datetime
+from datetime import date
 import pytz
 import helpers
 
@@ -138,7 +139,7 @@ def create_enter():
         family_notes = form.family_notes.data
         play_age_from = form.play_age_from.data
         play_age_to = form.play_age_to.data
-        person = Person(datetime.now(pytz.timezone("Europe/Riga")), datetime.now(pytz.timezone("Europe/Riga")), name, surname, nickname, pcode, contract_nr, birthdate, my_phone_code, my_phone, email, other_phone_code, other_phone, home_address, height, foot_size, cloth_size, voice, contact_lenses, be_dressed, None, False, species, mother_phone_code, mother_phone, mother_name, father_phone_code, father_phone, father_name, speciality, experience, None, current_occupation, workplace, play_age_from, play_age_to)
+        person = Person(datetime.datetime.now(pytz.timezone("Europe/Riga")), datetime.datetime.now(pytz.timezone("Europe/Riga")), name, surname, nickname, pcode, contract_nr, birthdate, my_phone_code, my_phone, email, other_phone_code, other_phone, home_address, height, foot_size, cloth_size, voice, contact_lenses, be_dressed, None, False, species, mother_phone_code, mother_phone, mother_name, father_phone_code, father_phone, father_name, speciality, experience, None, current_occupation, workplace, play_age_from, play_age_to)
         db.session.add(person)
         db.session.commit()
         skills = list()
@@ -234,7 +235,7 @@ def create_enter():
             if file and allowed_file(file.filename):
                 filename = str(person.id) + "_" + secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                add_document = Document(datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
+                add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
 
         #helpers.file_upload('photo', 'image1', person.id)
@@ -469,7 +470,7 @@ def update_profile(id):
         play_age_to = form.play_age_to.data
 
         Person.query.filter_by(id=id).update({
-            'modified': datetime.now(pytz.timezone("Europe/Riga")),
+            'modified': datetime.datetime.now(pytz.timezone("Europe/Riga")),
             'name': name,
             'surname': surname,
             'nickname': nickname,
@@ -595,7 +596,7 @@ def update_profile(id):
             if file and allowed_file(file.filename):
                 filename = str(person.id) + "_" + secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                add_document = Document(datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
+                add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
 
         #helpers.file_upload('photo', 'image1', person.id)
@@ -641,12 +642,27 @@ def profiles(page=1):
 
     name = request.args.get('name')
     surname = request.args.get('surname')
+    species = request.args.get('species')
+    speciality = request.args.get('speciality')
+    age_from = request.args.get('age_from')
+    age_to = request.args.get('age_to')
 
     profiles = Person.query
     if name:
         profiles = profiles.filter(Person.name.like('%' + name + '%'))
     if surname:
         profiles = profiles.filter(Person.surname.like('%' + surname + '%'))
+    if species:
+        profiles = profiles.filter(Person.species == species)
+    if speciality:
+        profiles = profiles.filter(Person.speciality == speciality)
+    if age_from and age_from.isdigit() and age_to and age_to.isdigit():
+        today = date.today()
+        date_from = datetime.date(today.year - int(age_from), today.month, today.day)
+        date_to = datetime.date(today.year - int(age_to), today.month, today.day)
+        #flash('birthdate [%s] date from: [%s] to [%s]' % (Person.birthdate, date_from, date_to), 'success')
+        profiles = profiles.filter(Person.birthdate >= date_to)
+        profiles = profiles.filter(Person.birthdate <= date_from)
 
     return render_template(
         'profiles.html', profiles=profiles.paginate(page, 12)
