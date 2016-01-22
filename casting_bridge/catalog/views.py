@@ -228,12 +228,13 @@ def create_enter():
             db.session.add(add_skill)
             db.session.commit()
 
+        file_mask = helpers.make_file_mask(species, birthdate, speciality, height)
         files = request.files.getlist('images[]')
         for file in files:
             #flash('file: [%s]' % file.filename, 'success')
             filename = ''
             if file and allowed_file(file.filename):
-                filename = str(person.id) + "_" + secure_filename(file.filename)
+                filename = str(person.id) + "_" + file_mask + secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
@@ -589,12 +590,13 @@ def update_profile(id):
 
         db.session.commit()
 
+        file_mask = helpers.make_file_mask(species, birthdate, speciality, height)
         files = request.files.getlist('images[]')
         for file in files:
             #flash('file: [%s]' % file.filename, 'success')
             filename = ''
             if file and allowed_file(file.filename):
-                filename = str(person.id) + "_" + secure_filename(file.filename)
+                filename = str(person.id) + "_" + file_mask + secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
@@ -660,7 +662,6 @@ def profiles(page=1):
         today = date.today()
         date_from = datetime.date(today.year - int(age_from), today.month, today.day)
         date_to = datetime.date(today.year - int(age_to), today.month, today.day)
-        #flash('birthdate [%s] date from: [%s] to [%s]' % (Person.birthdate, date_from, date_to), 'success')
         profiles = profiles.filter(Person.birthdate >= date_to)
         profiles = profiles.filter(Person.birthdate <= date_from)
 

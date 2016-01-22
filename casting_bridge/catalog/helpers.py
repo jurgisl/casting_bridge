@@ -3,7 +3,7 @@ from werkzeug import secure_filename
 from casting_bridge import db, app, ALLOWED_EXTENSIONS
 from casting_bridge.catalog.models import Document
 import os
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 
 def allowed_file(filename):
@@ -18,3 +18,19 @@ def file_upload(type, name, id):
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         add_document = Document(datetime.now(pytz.timezone("Europe/Riga")), id, type, filename)
         db.session.add(add_document)
+
+def make_file_mask(species, birthdate, speciality, height):
+    filename = "CB_"
+    filename += 'M_' if species == 'man' else 'F_'
+    if birthdate:
+        filename += str(birthdate.year) + "_"
+    if speciality == 'actor':
+        filename += 'AKT_'
+    elif speciality == 'professional':
+        filename += 'PRO_'
+    else:
+        filename += 'TAL_'
+    filename += height + "_"
+    filename += str(date.today()) + "_"
+    return filename
+
