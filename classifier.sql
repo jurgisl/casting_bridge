@@ -1,12 +1,4 @@
-BEGIN TRANSACTION;
-CREATE TABLE classifier (
-	id INTEGER NOT NULL, 
-	category VARCHAR(255), 
-	tag_lv VARCHAR(255), 
-	tag_en VARCHAR(255), 
-	tag_ru VARCHAR(255), 
-	PRIMARY KEY (id)
-);
+
 INSERT INTO `classifier` (id,category,tag_lv,tag_en,tag_ru) VALUES (1,'danceskill','Balles dejas',NULL,NULL),
  (2,'danceskill','Latīņamerikas dejas',NULL,NULL),
  (3,'danceskill','Streatdance','Streatdance',NULL),

@@ -148,7 +148,7 @@ class CustomRadioInput(Select):
         kwargs.setdefault('id', field.id)
         html = []
         for val, label, selected in field.iter_choices():
-            print("choices [%s] [%s] [%s]" % (val,label, selected))
+            #print("choices [%s] [%s] [%s]" % (val,label, selected))
             html.append(
                 '<label class="btn btn-default %s"> <input type="radio" %s> %s </label>' % ( 'active' if selected else '',
                     html_params(
