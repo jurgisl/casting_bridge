@@ -43,7 +43,11 @@
                             <a href="{{ url_for('catalog.profiles') }}">Profili</a>
                         </li>
                         <li>
-                            <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+                            {% if 'username' in session %}
+                                <a href="{{ url_for('catalog.logout') }}">Logout</a>
+                            {% else %}
+                                <a href="{{ url_for('catalog.login') }}">Login</a>
+                            {% endif %}
                         </li>
                     </ul>
 

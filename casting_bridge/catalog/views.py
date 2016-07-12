@@ -3,10 +3,10 @@ import os
 from functools import wraps
 from werkzeug import secure_filename
 from flask import request, Blueprint, render_template, jsonify, flash, \
-    redirect, url_for, send_from_directory, config
+    redirect, url_for, send_from_directory, config, session
 from casting_bridge import db, app, ALLOWED_EXTENSIONS, manager, admin
 #from casting_bridge import manager
-from casting_bridge.catalog.models import Classifier, Person, Skill, Document, UserForm, SelectMultipleFieldNoValidate, UpdateForm
+from casting_bridge.catalog.models import Classifier, Person, Skill, Document, UserForm, SelectMultipleFieldNoValidate, UpdateForm, LoginForm
 from sqlalchemy.orm.util import join
 from flask.ext.admin.contrib.sqla import ModelView
 import datetime
@@ -48,6 +48,9 @@ def page_not_found(e):
 @catalog.route('/')
 @catalog.route('/data-enter', methods=['GET', 'POST'])
 def create_enter():
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
     form = UserForm(request.form)
 
     choices = list()
@@ -280,6 +283,9 @@ def create_enter():
 
 @catalog.route('/update-profile/<id>', methods=['GET', 'POST'])
 def update_profile(id):
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
     person = Person.query.get_or_404(id)
     form = UpdateForm(
         request.form,
@@ -641,6 +647,8 @@ def update_profile(id):
 @catalog.route('/profiles')
 @catalog.route('/profiles/<int:page>')
 def profiles(page=1):
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
 
     name = request.args.get('name')
     surname = request.args.get('surname')
@@ -671,6 +679,9 @@ def profiles(page=1):
 
 @catalog.route('/profile-delete')
 def profile_delete():
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
     id = request.args.get('id')
     person = Person.query.get_or_404(id)
 
@@ -701,6 +712,9 @@ def profile_delete():
 
 @catalog.route('/photo-delete')
 def photo_delete():
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
     person_id = request.args.get('person_id')
     photo_id = request.args.get('photo_id')
     photo = Document.query.get_or_404(photo_id)
@@ -711,6 +725,24 @@ def photo_delete():
     db.session.commit()
 
     return redirect(url_for('catalog.update_profile', id=person_id))
+
+@catalog.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    if request.method == 'POST':
+        username = form.username.data
+        password = form.password.data
+        if (app.config['USER'] != '' and app.config['PIN'] != '' and (app.config['USER'] == username) and (app.config['PIN'] == password) ):
+            session['username'] = username
+            return redirect(url_for('catalog.create_enter'))
+
+    return render_template('login.html', form=form)
+
+@catalog.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('username', None)
+    return redirect(url_for('catalog.login'))
 
 manager.create_api(Classifier, methods=['GET'], results_per_page=None, exclude_columns=['skills'])
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
-from wtforms import TextField, DecimalField, SelectField, FileField, DateField, BooleanField, SelectMultipleField, RadioField, TextAreaField
+from wtforms import TextField, DecimalField, SelectField, FileField, DateField, BooleanField, SelectMultipleField, RadioField, TextAreaField, PasswordField
 from wtforms.validators import InputRequired, NumberRange, ValidationError, Optional, Length
 from wtforms.widgets import html_params, Select, HTMLString
 from flask_wtf import Form
@@ -258,4 +258,7 @@ class UpdateForm(BaseForm):
     image4 = FileField('Image No.4')
     image5 = FileField('Image No.5')
 
+class LoginForm(Form):
+    username = TextField('Username', validators=[InputRequired(),Length(max=20)])
+    password = PasswordField('Password', validators=[InputRequired(),Length(max=20)])
 

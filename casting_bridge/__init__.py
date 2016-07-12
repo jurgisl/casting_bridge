@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + '/uploads/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../cb.db'
 app.config['WTF_CSRF_SECRET_KEY'] = 'random key for form'
+app.config['USER'] = 'demo'
+app.config['PIN'] = 'demo'
 db = SQLAlchemy(app)
 manager = APIManager(app, flask_sqlalchemy_db=db)
 admin = Admin(app)
