@@ -34,13 +34,35 @@
                 {% endif %}
                 {% endfor %}
             </div> <!-- end row-->
+            <!-- VIDEO listing -->
+            <div class="row">
+                {% for video in videos.items %}
+                    <div class="col-md-6">
+                        <div class="thumbnail">
+                            <video id="sampleMovie" max-heght="50" controls>
+                                <source src="{{ url_for('download_file', filename=video.name) }}" />
+                            </video>
+                            <p>{{ video.created.strftime("%d-%m-%Y %H:%M:%S") }}</p>
+                            <div class="caption">
+                                <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=video.id) }}">
+                                    <p>Dzēst</d>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% if loop.index is divisibleby 2 %}
+                    </div> <!-- end row-->
+                    <div class="row">
+                {% endif %}
+                {% endfor %}
+            </div> <!-- end row-->
             <!-- update specific -->
 
             <!--div class="row">
               <div class="col-md-6">
                 <div class="thumbnail">
                 <video id="sampleMovie" max-heght="50" controls>
-                    <source src="{{ url_for('static', filename='uploads/1_IVAN_LEONID_BURZAK_MARIS_22.mov') }}" />
+                    <source src="{{ url_for('download_file', filename='1_Johan_Falk_Juris_Zagars.mp4') }}" />
                 </video>
                 </div>
               </div>

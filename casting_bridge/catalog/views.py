@@ -438,6 +438,7 @@ def update_profile(id):
         form.family_notes.choices = skill_box.get('family_notes')
 
     photos = Document.query.filter_by(person_id=id, type='photo').paginate(1,100,error_out=False)
+    videos = Document.query.filter_by(person_id=id, type='video').paginate(1,100,error_out=False)
     #for photo in photos:
     #    flash("photo : [%s]" % photo.name, 'info')
 
@@ -642,7 +643,7 @@ def update_profile(id):
     if form.errors:
         flash(form.errors, 'danger')
 
-    return render_template('profile_update.html', form=form, person=person, photos=photos )
+    return render_template('profile_update.html', form=form, person=person, photos=photos, videos=videos )
 
 @catalog.route('/profiles')
 @catalog.route('/profiles/<int:page>')
