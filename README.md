@@ -1,8 +1,8 @@
 # casting_bridge
 Saknes katalogā ir jāizveido trīs direktorijas manuāli
 
-mkdir -puploads/photo;
+mkdir -p uploads/photo;
 
-mkdir -puploads/profile;
+mkdir -p uploads/profile;
 
-mkdir -puploads/thumbnail;
+mkdir -p uploads/thumbnail;
