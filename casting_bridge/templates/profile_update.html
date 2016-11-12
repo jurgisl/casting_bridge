@@ -18,7 +18,7 @@
                 {% for photo in photos.items %}
                     <div class="col-md-3">
                         <div class="thumbnail">
-                            <img src="{{ url_for('download_file', filename=photo.name) }}" class="img-responsive">
+                            <img src="{{ url_for('thumbnail_dir', filename=photo.name) }}" class="img-responsive">
                             <p>{{ photo.created.strftime("%d-%m-%Y %H:%M:%S") }}</p>
                             <div class="caption">
                                 <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}">

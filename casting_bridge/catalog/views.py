@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from PIL import Image
 from functools import wraps
 from werkzeug import secure_filename
 from flask import request, Blueprint, render_template, jsonify, flash, \
@@ -19,6 +20,18 @@ catalog = Blueprint('catalog', __name__)
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
+@app.route('/uploads/profile/<path:filename>')
+def profile_dir(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + "profile/", filename, as_attachment=True)
+
+@app.route('/uploads/thumbnail/<path:filename>')
+def thumbnail_dir(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + "thumbnail/", filename, as_attachment=True)
+
+@app.route('/uploads/photo/<path:filename>')
+def photo_dir(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + "photo/", filename, as_attachment=True)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -238,12 +251,11 @@ def create_enter():
             filename = ''
             if file and allowed_file(file.filename):
                 filename = str(person.id) + "_" + file_mask + secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                photo_resize(file, filename, 683, 1024, False, "photo/")
+                photo_resize(file, filename, 250, 375, False, "thumbnail/")
                 add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
 
-        #helpers.file_upload('photo', 'image1', person.id)
-        #helpers.file_upload('photo', 'image2', person.id)
         helpers.file_upload('audio', 'audio', person.id)
         helpers.file_upload('video', 'video', person.id)
         profile_image = request.files['profile_image']
@@ -253,12 +265,11 @@ def create_enter():
             #flash('profile_image: [%s]' % profile_image, 'success')
             filename, file_extension = os.path.splitext(secure_filename(profile_image.filename))
             filename = str(person.id) + "_profile" + file_extension
-            profile_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            photo_resize(profile_image, filename, 250, 250, True, "profile/")
             Person.query.filter_by(id=person.id).update({
                 'profile_image': filename
             })
         if cv and helpers.allowed_file(cv.filename):
-            #flash('profile_image: [%s]' % profile_image, 'success')
             filename, file_extension = os.path.splitext(secure_filename(cv.filename))
             filename = str(person.id) + "_cv" + file_extension
             cv.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -604,15 +615,11 @@ def update_profile(id):
             filename = ''
             if file and allowed_file(file.filename):
                 filename = str(person.id) + "_" + file_mask + secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                photo_resize(file, filename, 683, 1024, False, "photo/")
+                photo_resize(file, filename, 250, 375, False, "thumbnail/")
                 add_document = Document(datetime.datetime.now(pytz.timezone("Europe/Riga")), person.id, 'photo', filename)
                 db.session.add(add_document)
 
-        #helpers.file_upload('photo', 'image1', person.id)
-        #helpers.file_upload('photo', 'image2', person.id)
-        #helpers.file_upload('photo', 'image3', person.id)
-        #helpers.file_upload('photo', 'image4', person.id)
-        #helpers.file_upload('photo', 'image5', person.id)
         helpers.file_upload('audio', 'audio', person.id)
         helpers.file_upload('video', 'video', person.id)
         profile_image = request.files['profile_image']
@@ -622,12 +629,12 @@ def update_profile(id):
             #flash('profile_image: [%s]' % profile_image, 'success')
             filename, file_extension = os.path.splitext(secure_filename(profile_image.filename))
             filename = str(person.id) + "_profile" + file_extension
-            profile_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            #photo_thumbnail(profile_image, filename)
+            photo_resize(profile_image, filename, 250, 250, True, "profile/")
             Person.query.filter_by(id=person.id).update({
                 'profile_image': filename
             })
         if cv and helpers.allowed_file(cv.filename):
-            #flash('profile_image: [%s]' % profile_image, 'success')
             filename, file_extension = os.path.splitext(secure_filename(cv.filename))
             filename = str(person.id) + "_cv" + file_extension
             cv.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -644,6 +651,20 @@ def update_profile(id):
         flash(form.errors, 'danger')
 
     return render_template('profile_update.html', form=form, person=person, photos=photos, videos=videos )
+
+def photo_resize(image, filename, width, heigh, crop=False, sufolder=""):
+    size = (width, heigh)
+    im = Image.open(image)
+    # make square image
+    if crop:
+        crop_size = im.width
+        if im.height < im.width:
+            crop_size = im.height
+        im = im.crop((0,0,crop_size,crop_size))
+    if im.height < im.width:
+        size = (heigh, width)
+    im.thumbnail(size, Image.ANTIALIAS)
+    im.save(os.path.join(app.config['UPLOAD_FOLDER'] + sufolder + filename), "JPEG")
 
 @catalog.route('/profiles')
 @catalog.route('/profiles/<int:page>')
@@ -678,6 +699,11 @@ def profiles(page=1):
         'profiles.html', profiles=profiles.paginate(page, 12)
     )
 
+def delete_file(filename, subfolder=""):
+    name = os.path.join(app.config['UPLOAD_FOLDER'] + subfolder, filename)
+    if os.path.exists(name):
+        os.remove(name)
+
 @catalog.route('/profile-delete')
 def profile_delete():
     if 'username' not in session:
@@ -689,10 +715,14 @@ def profile_delete():
     # Delete documents and filse
     documents = Document.query.filter_by(person_id=id)
     for document in documents:
-        filename = os.path.join(app.config['UPLOAD_FOLDER'], document.name)
-        #flash('filename [%s]' % (filename), 'success')
-        if os.path.exists(filename):
-            os.remove(filename)
+        # delete photo and thumbnail
+        if document.type == "photo":
+            subfolder = "thumbnail/"
+            delete_file(document.name, "thumbnail/")
+            delete_file(document.name, "photo/")
+        else:
+            delete_file(document.name)
+
     Document.query.filter_by(person_id=id).delete()
 
     # Delete skills
@@ -700,9 +730,12 @@ def profile_delete():
 
     # Delete profile picture
     if person.profile_image:
-        filename = os.path.join(app.config['UPLOAD_FOLDER'], person.profile_image)
-        if os.path.exists(filename):
-            os.remove(filename)
+        delete_file(person.profile_image, "profile/")
+
+    # Delete cv
+    if person.cv:
+        delete_file(person.cv)
+
     # Delete person
     db.session.delete(person)
     db.session.commit()
@@ -719,9 +752,11 @@ def photo_delete():
     person_id = request.args.get('person_id')
     photo_id = request.args.get('photo_id')
     photo = Document.query.get_or_404(photo_id)
-    filename = os.path.join(app.config['UPLOAD_FOLDER'], photo.name)
-    if os.path.exists(filename):
-        os.remove(filename)
+    if photo.type == "photo":
+        delete_file(photo.name, "thumbnail/")
+        delete_file(photo.name, "photo/")
+    else:
+        delete_file(photo.name)
     db.session.delete(photo)
     db.session.commit()
 
