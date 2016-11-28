@@ -14,9 +14,316 @@ import datetime
 from datetime import date
 import pytz
 import helpers
+import pdfkit
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 catalog = Blueprint('catalog', __name__)
 
+@catalog.route('/profile-print/<id>')
+def profile_print(id):
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
+    person = Person.query.get_or_404(id)
+    form = UpdateForm(
+        request.form,
+        name=person.name,
+        surname=person.surname,
+        nickname=person.nickname,
+        pcode=person.pcode,
+        contract_nr=person.contract_nr,
+        birthdate=person.birthdate,
+        my_phone=person.my_phone,
+        email=person.email,
+        other_phone=person.other_phone,
+        home_address=person.home_address,
+        height=person.height,
+        foot_size=person.foot_size,
+        cloth_size=person.cloth_size,
+        voice=person.voice,
+        contact_lenses=person.contact_lenses,
+        be_dressed=person.be_dressed,
+        mother_phone_code=person.mother_phone_code,
+        mother_phone=person.mother_phone,
+        mother_name=person.mother_name,
+        father_phone_code=person.father_phone_code,
+        father_phone=person.father_phone,
+        father_name=person.father_name,
+        experience=person.experience,
+        current_occupation = person.current_occupation,
+        workplace = person.workplace,
+        play_age_from = person.play_age_from,
+        play_age_to = person.play_age_to
+    )
+    if person.species:
+        form.species.data=person.species
+
+    if person.speciality:
+        form.speciality.data=person.speciality
+
+    # Get all possible values(choices) from Classifier
+    choices = list()
+    city_box = Classifier.query.filter_by(category='city').all()
+    for city_box in city_box:
+        if city_box:
+            choices.append((city_box.tag_lv,city_box.tag_lv))
+    form.city.choices = choices
+
+    choices = []
+    haircolor = Classifier.query.filter_by(category='haircolor').all()
+    for haircolor in haircolor:
+        if haircolor:
+            choices.append((haircolor.tag_lv,haircolor.tag_lv))
+    form.haircolor.choices = choices
+
+    choices = []
+    eyecolor = Classifier.query.filter_by(category='eyecolor').all()
+    for eyecolor in eyecolor:
+        if eyecolor:
+            choices.append((eyecolor.tag_lv,eyecolor.tag_lv))
+    form.eyecolor.choices = choices
+
+    choices = []
+    voice = Classifier.query.filter_by(category='voice').all()
+    for voice in voice:
+        if voice:
+            choices.append((voice.tag_lv,voice.tag_lv))
+    form.voice.choices = choices
+
+    choices = []
+    co = Classifier.query.filter_by(category='current_occupation').all()
+    for co in co:
+        if co:
+            choices.append((co.tag_lv,co.tag_lv))
+    form.current_occupation.choices = choices
+
+    choices = []
+    for size in range(35,50,1): # filled clothe size range 35 to 49
+        choices.append((str(size),(str(size))))
+    form.foot_size.choices = choices
+
+    choices = []
+    for size in range(32,69,2): # filled clothe size range 32 to 68
+        choices.append((str(size),(str(size))))
+    form.cloth_size.choices = choices
+
+    # Get all assigned Skills for person and add them as selected in form.
+    classifiers = Classifier.query.select_from(join(Classifier, Skill)).filter(Skill.person_id == id)
+    skill_box = {}
+    for item in classifiers:
+        #flash('skill [%s] cat [%s] ' % (item.tag_lv, item.category), 'info')
+        if skill_box.get(item.category) is None:
+            skill_box[item.category] = [(item.tag_lv,item.tag_lv)]
+        else:
+            skill_box[item.category].append((item.tag_lv,item.tag_lv))
+    all_danceskill=''
+    all_singskill=''
+    all_musicskill=''
+    all_sportskill=''
+    all_swimskill=''
+    all_driveskill=''
+    all_languageskill=''
+    all_otherskill=''
+    all_want_participate=''
+    all_dont_want_participatee=''
+    all_interested_in=''
+    all_tattoo=''
+    all_piercing=''
+    all_afraidof=''
+    all_religion=''
+    all_educational_institution=''
+    all_learned_profession=''
+    all_degree=''
+    all_current_occupation=''
+    all_subspeciality=''
+    all_specily=''
+    all_mother=''
+    all_father=''
+    #flash('danceskilldanceskill [%s]' % skill_box.get('danceskill'), 'info')
+    if skill_box.get('city'):
+        for skill in skill_box.get('city'):
+            form.city.data= skill[0]
+    if skill_box.get('haircolor'):
+        for skill in skill_box.get('haircolor'):
+            form.haircolor.data= skill[0]
+    if skill_box.get('eyecolor'):
+        for skill in skill_box.get('eyecolor'):
+            form.eyecolor.data= skill[0]
+    if skill_box.get('subspeciality'):
+        form.subspeciality.choices = skill_box.get('subspeciality')
+        for skill in skill_box.get('subspeciality'):
+		  all_subspeciality += str(skill[0]) + " "
+    if skill_box.get('danceskill'):
+        form.danceskill.choices = skill_box.get('danceskill')
+        for skill in skill_box.get('danceskill'):
+		  all_danceskill += str(skill[0]) + " "
+    if skill_box.get('singskill'):
+        form.singskill.choices = skill_box.get('singskill')
+        for skill in skill_box.get('singskill'):
+		  all_singskill += str(skill[0]) + " "
+    if skill_box.get('musicskill'):
+        form.musicskill.choices = skill_box.get('musicskill')
+        for skill in skill_box.get('musicskill'):
+		  all_musicskill += str(skill[0]) + " "
+    if skill_box.get('sportskill'):
+        form.sportskill.choices = skill_box.get('sportskill')
+        for skill in skill_box.get('sportskill'):
+		  all_sportskill += str(skill[0]) + " "
+    if skill_box.get('swimskill'):
+        form.swimskill.choices = skill_box.get('swimskill')
+        for skill in skill_box.get('swimskill'):
+		  all_swimskill += str(skill[0]) + " "
+    if skill_box.get('driveskill'):
+        form.driveskill.choices = skill_box.get('driveskill')
+        for skill in skill_box.get('driveskill'):
+		  all_driveskill += str(skill[0]) + " "
+    if skill_box.get('languageskill'):
+        form.languageskill.choices = skill_box.get('languageskill')
+        for skill in skill_box.get('languageskill'):
+		  all_languageskill += str(skill[0]) + " "
+    if skill_box.get('otherskill'):
+        form.otherskill.choices = skill_box.get('otherskill')
+        for skill in skill_box.get('otherskill'):
+		  all_otherskill += str(skill[0]) + " "
+    if skill_box.get('want_participate'):
+        form.want_participate.choices = skill_box.get('want_participate')
+        for skill in skill_box.get('want_participate'):
+		  all_want_participate+= str(skill[0]) + " "
+    if skill_box.get('dont_want_participate'):
+        form.dont_want_participate.choices = skill_box.get('dont_want_participate')
+        for skill in skill_box.get('dont_want_participate'):
+		  all_dont_want_participatee+= str(skill[0]) + " "
+    if skill_box.get('interested_in'):
+        form.interested_in.choices = skill_box.get('interested_in')
+        for skill in skill_box.get('interested_in'):
+		  all_interested_in+= str(skill[0]) + " "
+    if skill_box.get('tattoo'):
+        form.tattoo.choices = skill_box.get('tattoo')
+        for skill in skill_box.get('tattoo'):
+		  all_tattoo+= str(skill[0]) + " "
+    if skill_box.get('piercing'):
+        form.piercing.choices = skill_box.get('piercing')
+        for skill in skill_box.get('piercing'):
+		  all_piercing+= str(skill[0]) + " "
+    if skill_box.get('afraidof'):
+        form.afraidof.choices = skill_box.get('afraidof')
+        for skill in skill_box.get('afraidof'):
+		  all_afraidof+= str(skill[0]) + " "
+    if skill_box.get('religion'):
+        form.religion.choices = skill_box.get('religion')
+        for skill in skill_box.get('religion'):
+		  all_religion+= str(skill[0]) + " "
+    if skill_box.get('educational_institution'):
+        form.educational_institution.choices = skill_box.get('educational_institution')
+        for skill in skill_box.get('educational_institution'):
+		  all_educational_institution+= str(skill[0]) + " "
+    if skill_box.get('learned_profession'):
+        form.learned_profession.choices = skill_box.get('learned_profession')
+        for skill in skill_box.get('learned_profession'):
+		  all_learned_profession+= str(skill[0]) + " "
+    if skill_box.get('degree'):
+        form.degree.choices = skill_box.get('degree')
+        for skill in skill_box.get('degree'):
+		  all_degree+= str(skill[0]) + " "
+    if skill_box.get('current_occupation'):
+        form.current_occupation.choices = skill_box.get('current_occupation')
+        for skill in skill_box.get('current_occupation'):
+		  all_current_occupation+= str(skill[0]) + " "
+    if skill_box.get('voice'):
+        form.current_occupation.choices = skill_box.get('voice')
+    if skill_box.get('cb_tags'):
+        form.cb_tags.choices = skill_box.get('cb_tags')
+    if skill_box.get('family_notes'):
+        form.family_notes.choices = skill_box.get('family_notes')
+    all_mother=str(person.mother_name) +' - '+  str(person.mother_phone_code)+  str(person.mother_phone)
+    all_father=str(person.father_name)+' - '+  str(person.father_phone_code)+  str(person.father_phone)
+    if str(person.speciality)=='actor':
+		all_specily='Aktieris'
+    if str(person.speciality)=='professional':
+		all_specily='Profesionālis'
+    if str(person.speciality)=='talent':
+		all_specily='Talants'
+    str_be_dressed=''
+    if person.be_dressed:
+		str_be_dressed='Jā'
+    str_contact_lenses='Nav'
+    if person.contact_lenses:
+		str_contact_lenses='Ir'
+    strTuks=''
+    if (str(person.mother_name)==strTuks):
+	 all_mother=''
+    if (str(person.father_name)==strTuks):
+	 all_father=''
+    cels=os.getcwd()
+    html = """
+    <! DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <html>
+    <head>
+    <title>Anketa</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    </head>
+    <body>
+    <table border="0" align="center" width="100%">
+    <tr><td width="20%">"""
+    html += '<img src="'+ cels +'\casting_bridge\static\img\cb_logo_s.png"> '
+    html +='</td><td width="80%" align=center><h1>Datu bāzes anketas</h1></td></tr><table border="0" align="center" width="100%">'
+    html +='<tr><td colspan=2><h2></h2></td></tr>'
+    html +=' <tr><td colspan=2  style="border-bottom:1pt solid black;">'
+    html +='<table border="0" align="center" width="100%">'
+    html += '<tr><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\cil.png">  Personas dati</font></td><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\groupa.png">  Ģimene</font></td></tr>'
+    html += '<tr><td width="25%">Vārds:</td><td width="25%"><b> ' + str(person.name) +'</b></td><td>Mātes vārds/uzvārds:</td><td><b> ' + all_mother +'</b></td></tr>'
+    html += '<tr><td width="25%">Uzvārds:</td><td width="25%"><b> ' + str(person.surname) +'</b></td><td>Tēva vārds/uzvārds:</td><td><b> ' + all_father +'</b></td></tr>'
+    html += '<tr><td width="25%">Skatuves vārds:</td><td width="25%"><b> ' + str(person.nickname) +'</b></td><td>Telefons 1:</td><td><b> ' + str(person.my_phone_code)+  str(person.my_phone) +'</b></td></tr>'
+    html += '<tr><td width="25%">Personas kods:</td><td width="25%"><b> ' + str(person.pcode) +'</b></td><td>Telefons 2:</td><td><b> ' + str(person.other_phone_code)+  str(person.other_phone) +'</b></td></tr>'
+    html += '<tr><td width="25%">Viensošanās numurs:</td><td width="25%"><b> ' + str(person.contract_nr) +'</b></td><td>E-pasts:</td><td><b> ' + str(person.email) +'</b></td></tr>'
+    html += '<tr><td width="25%">Dzimšanas datums:</td><td width="25%"><b> ' + str(person.birthdate) +'</b></td><td>Adrese:</td><td><b> ' + str(person.home_address) +'</b></td></tr>'
+    html += '</table>'
+    html += '</td></tr><tr><td colspan=2  style="border-bottom:1pt solid black;"> <table border="0" align="center" width="100%">'
+    html += '<tr><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\shapes.png">  Personīgās īpašības</font></td><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\shape.png">  Kas tu esi?</font></td></tr>'
+    html += '<tr><td width="25%">Augums:</td><td width="25%"><b> ' + str(person.height) +'</b></td><td>Kas tu esi?:</td><td><b> ' + str(all_specily) +'</b></td></tr>'
+    html += '<tr><td width="25%">Apavu izmērs:</td><td width="25%"><b> ' + str(person.foot_size) +'</b></td><td>Specializācija:</td><td><b> ' + str(all_subspeciality) +'</b></td></tr>'
+    html += '<tr><td width="25%">Apģērbu izmērs:</td><td width="25%"><b> ' + str(person.cloth_size) +'</b></td><td>Filmēšanas pierdze:</td><td><b> ' + str(form.experience.data) +'</b></td></tr>'
+    html += '<tr><td width="25%">Balss tembrs:</td><td width="25%"><b> ' + str(person.voice) +'</b></td><td>Valodu zināšanas:</td><td><b> '+str(all_languageskill)+'</b></td></tr>'
+    html += '<tr><td width="25%">Matu krāsa:</td><td width="25%"><b> ' + str(form.haircolor.data) +'</b></td><td>Hobiji:</td><td><b> '+str(all_otherskill)+'</b></td></tr>'
+    html += '<tr><td width="25%">Acu krāsa:</td><td width="25%"><b> ' + str(form.eyecolor.data) +'</b></td><td> </td><td> </td></tr>'
+    html +='</table></td></tr>'
+    html +='<tr><td colspan=2 style="border-bottom:1pt solid black;"><table border="0" align="center" width="100%">'
+    html +='<tr><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\music.png">  Prasmes</font></td><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\interface.png">  Darbs un izglītība</font></td></tr>'
+    html += '<tr><td width="25%">Dejotprasme:</td><td width="25%"><b> ' + str(all_danceskill) +'</b></td><td>Mācību iestāde:</td><td><b> ' + str(all_educational_institution) +'</b></td></tr>'
+    html += '<tr><td width="25%">Dziedātprasme:</td><td width="25%"><b> ' + str(all_singskill) +'</b></td><td>Apgūtā profesija:</td><td><b> ' + str(all_learned_profession) +'</b></td></tr>'
+    html += '<tr><td width="25%">Mūzikas instrumenti:</td><td width="25%"><b> ' + str(all_musicskill) +'</b></td><td>Klase vai līmenis:</td><td><b> ' + str(all_degree) +'</b></td></tr>'
+    html += '<tr><td width="25%">Sporta veidi:</td><td width="25%"><b> ' + str(all_sportskill) +'</b></td><td>Nodarbošanās:</td><td><b> ' + str(all_current_occupation) +'</b></td></tr>'
+    html += '<tr><td width="25%">Peldētprasme:</td><td width="25%"><b> ' + str(all_swimskill) +'</b></td><td>Darba vieta:</td><td><b> ' + str(person.workplace) +'</b></td></tr>'
+    html += '<tr><td width="25%">Transportlīdzekļa vadīšana:</td><td width="25%"><b> ' + str(all_driveskill) +'</b></td><td> </td><td> </td></tr>'
+    html += '</table></td></tr>'
+    html += '<tr><td colspan=2 style="border-bottom:1pt solid black;"><table border="0" align="center" width="100%">'
+    html += '<tr><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\check.png">  Manas vēlmes</font></td><td colspan=2 style="border-bottom:1pt solid black;"><font size="5"><img src="'+ cels +'\casting_bridge\static\img\school.png">  Piezīmes, ko jāņem vērā</font></td></tr>'
+    html += '<tr><td width="25%">Gribu piedalīties:</td><td width="25%"><b> ' + str(all_want_participate) +'</b></td><td>Tetovējumi:</td><td><b> ' + str(all_tattoo) +'</b></td></tr>'
+    html += '<tr><td width="25%">Negribu piedalīties:</td><td width="25%"><b> ' + str(all_dont_want_participatee) +'</b></td><td>Pīrsingi:</td><td><b> ' + str(all_piercing) +'</b></td></tr>'
+    html += '<tr><td width="25%">Mani interesē:</td><td width="25%"><b> ' + str(all_interested_in) +'</b></td><td>Bailes no:</td><td><b> ' + str(all_afraidof) +'</b></td></tr>'
+    html += '<tr><td width="25%">Nevēlos atkailināties kameras priekšā:</div></td><td width="25%"><b>  '+ str_be_dressed +'</b></td><td>Reliģiskā pārliecība:</td><td><b> ' + str(all_religion) +'</b></td></tr>'
+    html += '<tr><td width="25%"> </td><td width="25%"> </td><td>Kontaktlēcas:</td><td><b> ' + str_contact_lenses +'</b></td></tr>'
+    html += '</table> </td></tr>'
+    html += '<tr><td colspan=2><div>*Ar šo izsaku savu piekrišanu, ka SIA"CASTING BRIDGE", vienotais reģistrācijas numurs: 40103389862, iekļauj, uzglabā un apstrādā savā datu bāzē manus fiziskās personas datus. Esmu informēts, ka minētās darbības nepieciešamas, lai piedāvātu manus pakalpojumus trešajām personām. Piekrītu, ka manis sniegtā informācija atlases un pakalpojumu sniegšanas gaitā tiks sniegta trešajām personām, kuras ir ieinteresētas minēto pakalpojumu pirkšanā.</div></br></td></tr>'
+    html += '<tr><td width="50%"><h3>Datums:</h3></td><td width="50%"><h3>*paraksts:</h3></td></tr></table>'
+    html += '</body>'
+    html += '</html>'
+
+    #path_wkthmltopdf = r'C:\Python27\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    #config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+    fn = 'uploads\documents' +  str(id) + '.pdf'
+    #pdfkit.from_string(html,fn, configuration=config)   
+    pdfkit.from_string(html,fn)   
+    try:
+        os.startfile(fn)
+    except:
+        os.system("xdg-open \"%s\"" % fn)	
+    photos = Document.query.filter_by(person_id=id, type='photo').paginate(1,100,error_out=False)
+    videos = Document.query.filter_by(person_id=id, type='video').paginate(1,100,error_out=False)
+    return render_template('profile_update.html', form=form, person=person, photos=photos, videos=videos )
+	
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
