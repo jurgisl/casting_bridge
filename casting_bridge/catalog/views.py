@@ -16,6 +16,8 @@ import pytz
 import helpers
 import pdfkit
 import sys
+
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -313,16 +315,13 @@ def profile_print(id):
 
     #path_wkthmltopdf = r'C:\Python27\wkhtmltopdf\bin\wkhtmltopdf.exe'
     #config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
-    fn = 'uploads\documents' +  str(id) + '.pdf'
+    fn = app.config['UPLOAD_FOLDER']+'/documents' +  str(id) + '.pdf'
+    url='http://database.castingbridge.lv:5000/uploads/'+'documents' +  str(id) + '.pdf'
     #pdfkit.from_string(html,fn, configuration=config)   
-    pdfkit.from_string(html,fn)   
-    try:
-        os.startfile(fn)
-    except:
-        os.system("xdg-open \"%s\"" % fn)	
-    photos = Document.query.filter_by(person_id=id, type='photo').paginate(1,100,error_out=False)
-    videos = Document.query.filter_by(person_id=id, type='video').paginate(1,100,error_out=False)
-    return render_template('profile_update.html', form=form, person=person, photos=photos, videos=videos )
+    pdfkit.from_string(html,fn)
+
+    return redirect(url)
+    
 	
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
