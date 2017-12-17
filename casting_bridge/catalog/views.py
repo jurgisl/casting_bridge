@@ -316,7 +316,7 @@ def profile_print(id):
     #path_wkthmltopdf = r'C:\Python27\wkhtmltopdf\bin\wkhtmltopdf.exe'
     #config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
     fn = app.config['UPLOAD_FOLDER']+'/documents' +  str(id) + '.pdf'
-    url='http://database.castingbridge.lv:5000/uploads/'+'documents' +  str(id) + '.pdf'
+    url='http://35.176.146.27/uploads/'+'documents' +  str(id) + '.pdf'
     #pdfkit.from_string(html,fn, configuration=config)   
     pdfkit.from_string(html,fn)
 

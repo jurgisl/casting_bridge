@@ -10,12 +10,18 @@ ADD ./requirements /requirements
 
 RUN apt-get update
 RUN apt-get install -y libtiff4-dev libjpeg8-dev zlib1g-dev \
-    libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev python-tk
+    libfreetype6-dev liblcms2-dev libwebp-dev tcl8.5-dev tk8.5-dev python-tk \
+    xvfb libfontconfig wkhtmltopdf
 RUN pip install -r /requirements/local.txt
 
 RUN groupadd -r flask && useradd -r -g flask flask
 ADD . /app
 RUN chown -R flask /app
+
+# Configure xserver for pdf 
+RUN echo '#!/bin/bash\nxvfb-run -a --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltopdf -q $*' > /usr/bin/wkhtmltopdf.sh
+RUN chmod a+x /usr/bin/wkhtmltopdf.sh
+RUN ln -s /usr/bin/wkhtmltopdf.sh /usr/local/bin/wkhtmltopdf
 
 WORKDIR /app
 
