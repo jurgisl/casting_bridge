@@ -69,7 +69,7 @@
 
                     {% else %}
                         <img src="{{ url_for('static', filename='img/user_placeholder.jpg') }}" class="center-block img-circle img-responsive">
-                    {%endif %}
+                    {% endif %}
                     <h3 class="text-center">{{ profile.name }}</h3>
                     <p class="text-center">ID-{{ profile.id }}</p>
                     </a>
@@ -87,18 +87,18 @@
             <div class="container">
                 <div class="col-md-12 col-md-offset-5">
                 {% if profiles.has_prev %}
-                  <a href="{{ url_for('catalog.profiles', page=profiles.prev_num) }}">
-                    {{"<< Iepriekšējā lapa"}}
+                  <a href="{{ url_for(request.endpoint, page=profiles.prev_num, **request.args) }}">
+                    {{ "<< Iepriekšējā lapa" }}
                   </a>
                 {% else %}
-                  {{"<< Iepriekšējā lapa"}}
+                  {{ "<< Iepriekšējā lapa" }}
                 {% endif %} |
                 {% if profiles.has_next %}
-                  <a href="{{ url_for('catalog.profiles', page=profiles.next_num) }}">
-                    {{"Nākošā lapa >>"}}
+                  <a href="{{ url_for(request.endpoint, page=profiles.next_num, **request.args) }}">
+                    {{ "Nākošā lapa >>" }}
                   </a>
                 {% else %}
-                  {{"Nākošā lapa >>"}}
+                  {{ "Nākošā lapa >>" }}
                 {% endif %}
                 </div>
             </div>
