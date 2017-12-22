@@ -94,6 +94,19 @@
                 {% else %}
                   {{ "<< Iepriekšējā lapa" }}
                 {% endif %} |
+
+                {% for page in profiles.iter_pages() %}
+                  {% if page %}
+                    {% if page != profiles.page %}
+                      <a href="{{ url_for(request.endpoint, page=page) }}">{{ page }}</a>
+                    {% else %}
+                      <strong>{{ page }}</strong>
+                    {% endif %}
+                  {% else %}
+                    <span class=ellipsis>…</span>
+                  {% endif %}
+                {% endfor %}
+
                 {% if profiles.has_next %}
                   <a href="{{ url_for(request.endpoint, page=profiles.next_num, **request.args) }}">
                     {{ "Nākošā lapa >>" }}
