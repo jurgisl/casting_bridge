@@ -21,38 +21,39 @@
               <div class="row">
                     <div class="col-md-3">
                       <select class="selectpicker" name="species" title="Dzimums">
-                        <option value="man">Vīrietis</option>
-                        <option value="woman">Sieviete</option>
+                        <option value="man"{% if 'man' == request.args.species %} selected{% endif %}>Vīrietis</option>
+                        <option value="woman"{% if 'woman' == request.args.species %} selected{% endif %}>Sieviete</option>
                       </select>
                     </div>
                     <div class="col-md-3">
                       <select class="selectpicker" name="speciality" title="Specialitāte">
-                        <option value="actor">Aktieris</option>
-                        <option value="professional">Profesionālis</option>
-                        <option value="talent">Talants</option>
+                        <option value="actor"{% if 'actor' == request.args.speciality %} selected{% endif %}>Aktieris</option>
+                        <option value="professional"{% if 'professional' == request.args.speciality %} selected{% endif %}>Profesionālis</option>
+                        <option value="talent"{% if 'talent' == request.args.speciality %} selected{% endif %}>Talants</option>
                       </select>
                     </div>
                     <div class="col-md-1">
                       <label class="control-label">Vecums: </label>
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="age_from" id="age_from" class="form-control" aria-label="..." placeholder="no" maxlength=2>
+                      <input type="text" name="age_from" id="age_from" class="form-control" aria-label="..." placeholder="no" maxlength="2" value="{{ request.args.age_from }}">
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="age_to" id="age_to" class="form-control" aria-label="..." placeholder="līdz" maxlength=2>
+                      <input type="text" name="age_to" id="age_to" class="form-control" aria-label="..." placeholder="līdz" maxlength="2" value="{{ request.args.age_to }}">
                     </div>
               </div><br>
               <div class="row">
                     <div class="col-md-2"></div>
                     <div class="col-md-2"></div>
                     <div class="col-md-2">
-                      <input type="text" name="name" id="name" class="form-control" aria-label="..." placeholder="Vārds">
+                      <input type="text" name="name" id="name" class="form-control" aria-label="..." placeholder="Vārds" value="{{ request.args.name }}">
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="surname" id="surname" class="form-control" aria-label="..." placeholder="Uzvārds">
+                      <input type="text" name="surname" id="surname" class="form-control" aria-label="..." placeholder="Uzvārds" value="{{ request.args.surname }}">
                     </div>
                     <div class="col-md-2">
                       <button type="submit" class="btn btn-default">Meklēt</button>
+                      <input type="reset" class="btn btn-warning" value="Notīrīt" />
                     </div>
               </div>
             </form>
