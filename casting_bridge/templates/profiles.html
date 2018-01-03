@@ -36,20 +36,22 @@
                       <label class="control-label">Vecums: </label>
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="age_from" id="age_from" class="form-control" aria-label="..." placeholder="no" maxlength="2" value="{{ request.args.age_from }}">
+                      <input type="text" name="age_from" id="age_from" class="form-control" aria-label="..." placeholder="no" maxlength="2" value="{{ request.args.age_from }}" />
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="age_to" id="age_to" class="form-control" aria-label="..." placeholder="līdz" maxlength="2" value="{{ request.args.age_to }}">
+                      <input type="text" name="age_to" id="age_to" class="form-control" aria-label="..." placeholder="līdz" maxlength="2" value="{{ request.args.age_to }}" />
                     </div>
               </div><br>
               <div class="row">
                     <div class="col-md-2"></div>
-                    <div class="col-md-2"></div>
                     <div class="col-md-2">
-                      <input type="text" name="name" id="name" class="form-control" aria-label="..." placeholder="Vārds" value="{{ request.args.name }}">
+                      <input type="text" name="name" id="name" class="form-control" aria-label="..." placeholder="Vārds" value="{{ request.args.name }}" />
                     </div>
                     <div class="col-md-2">
-                      <input type="text" name="surname" id="surname" class="form-control" aria-label="..." placeholder="Uzvārds" value="{{ request.args.surname }}">
+                      <input type="text" name="surname" id="surname" class="form-control" aria-label="..." placeholder="Uzvārds" value="{{ request.args.surname }}" />
+                    </div>
+                    <div class="col-md-2">
+                      <input type="text" name="skills" id="skills" class="form-control" aria-label="..." placeholder="Īpašības" />
                     </div>
                     <div class="col-md-2">
                       <button type="submit" class="btn btn-default">Meklēt</button>
@@ -98,7 +100,7 @@
                 {% for page in profiles.iter_pages() %}
                   {% if page %}
                     {% if page != profiles.page %}
-                      <a href="{{ url_for(request.endpoint, page=page) }}">{{ page }}</a>
+                      <a href="{{ url_for(request.endpoint, page=page, **request.args) }}">{{ page }}</a>
                     {% else %}
                       <strong>{{ page }}</strong>
                     {% endif %}
@@ -121,8 +123,49 @@
         </div>
 
     <script type="text/javascript">
+      var skills = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        initialize: false,
+        // local: [
+        //   {% for skill in skills %}
+        //     { id:{{ skill.id }}, name:"{{ skill.tag_lv }}" },
+        //   {% endfor %}
+        // ],
+        // identify: function(obj) { return obj.id; },
+        prefetch: {
+          url: '/api/classifier',
+          cache : false,
+          filter: function(list) {
+            return $.map(list.objects, function(classifier) {
+              return { name: classifier.tag_lv, id: classifier.id };
+            });
+          }
+        }
+      });
+      skills.initialize();
 
+      var skillElem = $('#skills');
+      skillElem.tagsinput({
+        freeInput: false,
+        trimValue: true,
+        itemValue: 'id',
+        itemText: 'name',
+        typeaheadjs: [
+          {
+              hint: true,
+              highlight: true
+          },
+          {
+              name: 'objects',
+              displayKey: 'name',
+              source: skills.ttAdapter()
+          }]
+      });
 
+      {% for skill in skills %}
+      skillElem.tagsinput('add', { "id": {{ skill.id }}, "name": "{{ skill.tag_lv }}" });
+      {% endfor %}
 
     </script>
 

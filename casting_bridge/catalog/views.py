@@ -9,6 +9,7 @@ from casting_bridge import db, app, ALLOWED_EXTENSIONS, manager, admin
 #from casting_bridge import manager
 from casting_bridge.catalog.models import Classifier, Person, Skill, Document, UserForm, SelectMultipleFieldNoValidate, UpdateForm, LoginForm
 from sqlalchemy.orm.util import join
+from sqlalchemy import func
 from flask.ext.admin.contrib.sqla import ModelView
 import datetime
 from datetime import date
@@ -156,83 +157,83 @@ def profile_print(id):
     if skill_box.get('subspeciality'):
         form.subspeciality.choices = skill_box.get('subspeciality')
         for skill in skill_box.get('subspeciality'):
-		  all_subspeciality += str(skill[0]) + " "
+          all_subspeciality += str(skill[0]) + " "
     if skill_box.get('danceskill'):
         form.danceskill.choices = skill_box.get('danceskill')
         for skill in skill_box.get('danceskill'):
-		  all_danceskill += str(skill[0]) + " "
+          all_danceskill += str(skill[0]) + " "
     if skill_box.get('singskill'):
         form.singskill.choices = skill_box.get('singskill')
         for skill in skill_box.get('singskill'):
-		  all_singskill += str(skill[0]) + " "
+          all_singskill += str(skill[0]) + " "
     if skill_box.get('musicskill'):
         form.musicskill.choices = skill_box.get('musicskill')
         for skill in skill_box.get('musicskill'):
-		  all_musicskill += str(skill[0]) + " "
+          all_musicskill += str(skill[0]) + " "
     if skill_box.get('sportskill'):
         form.sportskill.choices = skill_box.get('sportskill')
         for skill in skill_box.get('sportskill'):
-		  all_sportskill += str(skill[0]) + " "
+          all_sportskill += str(skill[0]) + " "
     if skill_box.get('swimskill'):
         form.swimskill.choices = skill_box.get('swimskill')
         for skill in skill_box.get('swimskill'):
-		  all_swimskill += str(skill[0]) + " "
+          all_swimskill += str(skill[0]) + " "
     if skill_box.get('driveskill'):
         form.driveskill.choices = skill_box.get('driveskill')
         for skill in skill_box.get('driveskill'):
-		  all_driveskill += str(skill[0]) + " "
+          all_driveskill += str(skill[0]) + " "
     if skill_box.get('languageskill'):
         form.languageskill.choices = skill_box.get('languageskill')
         for skill in skill_box.get('languageskill'):
-		  all_languageskill += str(skill[0]) + " "
+          all_languageskill += str(skill[0]) + " "
     if skill_box.get('otherskill'):
         form.otherskill.choices = skill_box.get('otherskill')
         for skill in skill_box.get('otherskill'):
-		  all_otherskill += str(skill[0]) + " "
+          all_otherskill += str(skill[0]) + " "
     if skill_box.get('want_participate'):
         form.want_participate.choices = skill_box.get('want_participate')
         for skill in skill_box.get('want_participate'):
-		  all_want_participate+= str(skill[0]) + " "
+          all_want_participate+= str(skill[0]) + " "
     if skill_box.get('dont_want_participate'):
         form.dont_want_participate.choices = skill_box.get('dont_want_participate')
         for skill in skill_box.get('dont_want_participate'):
-		  all_dont_want_participatee+= str(skill[0]) + " "
+          all_dont_want_participatee+= str(skill[0]) + " "
     if skill_box.get('interested_in'):
         form.interested_in.choices = skill_box.get('interested_in')
         for skill in skill_box.get('interested_in'):
-		  all_interested_in+= str(skill[0]) + " "
+          all_interested_in+= str(skill[0]) + " "
     if skill_box.get('tattoo'):
         form.tattoo.choices = skill_box.get('tattoo')
         for skill in skill_box.get('tattoo'):
-		  all_tattoo+= str(skill[0]) + " "
+          all_tattoo+= str(skill[0]) + " "
     if skill_box.get('piercing'):
         form.piercing.choices = skill_box.get('piercing')
         for skill in skill_box.get('piercing'):
-		  all_piercing+= str(skill[0]) + " "
+          all_piercing+= str(skill[0]) + " "
     if skill_box.get('afraidof'):
         form.afraidof.choices = skill_box.get('afraidof')
         for skill in skill_box.get('afraidof'):
-		  all_afraidof+= str(skill[0]) + " "
+          all_afraidof+= str(skill[0]) + " "
     if skill_box.get('religion'):
         form.religion.choices = skill_box.get('religion')
         for skill in skill_box.get('religion'):
-		  all_religion+= str(skill[0]) + " "
+          all_religion+= str(skill[0]) + " "
     if skill_box.get('educational_institution'):
         form.educational_institution.choices = skill_box.get('educational_institution')
         for skill in skill_box.get('educational_institution'):
-		  all_educational_institution+= str(skill[0]) + " "
+          all_educational_institution+= str(skill[0]) + " "
     if skill_box.get('learned_profession'):
         form.learned_profession.choices = skill_box.get('learned_profession')
         for skill in skill_box.get('learned_profession'):
-		  all_learned_profession+= str(skill[0]) + " "
+          all_learned_profession+= str(skill[0]) + " "
     if skill_box.get('degree'):
         form.degree.choices = skill_box.get('degree')
         for skill in skill_box.get('degree'):
-		  all_degree+= str(skill[0]) + " "
+          all_degree+= str(skill[0]) + " "
     if skill_box.get('current_occupation'):
         form.current_occupation.choices = skill_box.get('current_occupation')
         for skill in skill_box.get('current_occupation'):
-		  all_current_occupation+= str(skill[0]) + " "
+          all_current_occupation+= str(skill[0]) + " "
     if skill_box.get('voice'):
         form.current_occupation.choices = skill_box.get('voice')
     if skill_box.get('cb_tags'):
@@ -242,22 +243,22 @@ def profile_print(id):
     all_mother=str(person.mother_name) +' - '+  str(person.mother_phone_code)+  str(person.mother_phone)
     all_father=str(person.father_name)+' - '+  str(person.father_phone_code)+  str(person.father_phone)
     if str(person.speciality)=='actor':
-		all_specily='Aktieris'
+        all_specily='Aktieris'
     if str(person.speciality)=='professional':
-		all_specily='Profesionālis'
+        all_specily='Profesionālis'
     if str(person.speciality)=='talent':
-		all_specily='Talants'
+        all_specily='Talants'
     str_be_dressed=''
     if person.be_dressed:
-		str_be_dressed='Jā'
+        str_be_dressed='Jā'
     str_contact_lenses='Nav'
     if person.contact_lenses:
-		str_contact_lenses='Ir'
+        str_contact_lenses='Ir'
     strTuks=''
     if (str(person.mother_name)==strTuks):
-	 all_mother=''
+     all_mother=''
     if (str(person.father_name)==strTuks):
-	 all_father=''
+     all_father=''
     cels=os.getcwd()
     html = """
     <! DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -317,12 +318,12 @@ def profile_print(id):
     #config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
     fn = app.config['UPLOAD_FOLDER']+'/documents' +  str(id) + '.pdf'
     url='http://35.176.146.27/uploads/'+'documents' +  str(id) + '.pdf'
-    #pdfkit.from_string(html,fn, configuration=config)   
+    #pdfkit.from_string(html,fn, configuration=config)
     pdfkit.from_string(html,fn)
 
     return redirect(url)
-    
-	
+
+
 @app.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
@@ -986,6 +987,17 @@ def profiles(page=1):
     age_to = request.args.get('age_to')
 
     profiles = Person.query
+    skills = request.args.get('skills')
+    classifiers = list()
+
+    if skills:
+        classifierIds = skills.split(',')
+        classifiers = Classifier.query.filter(Classifier.id.in_(classifierIds)).all()
+
+        profiles = profiles.join(Person.skills)
+        profiles = profiles.filter(Skill.classifier_id.in_(classifierIds))
+        flash('%s ? (%s,%s).' % (str(profiles), classifierIds, len(classifierIds)), 'info')
+
     if name:
         profiles = profiles.filter(Person.name.like('%' + name + '%'))
     if surname:
@@ -1001,8 +1013,10 @@ def profiles(page=1):
         profiles = profiles.filter(Person.birthdate >= date_to)
         profiles = profiles.filter(Person.birthdate <= date_from)
 
+    profiles = profiles.order_by(Person.name)
+
     return render_template(
-        'profiles.html', profiles=profiles.paginate(page, 12)
+        'profiles.html', profiles=profiles.paginate(page, 12), skills=classifiers
     )
 
 def delete_file(filename, subfolder=""):
