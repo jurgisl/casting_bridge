@@ -996,7 +996,6 @@ def profiles(page=1):
 
         profiles = profiles.join(Person.skills)
         profiles = profiles.filter(Skill.classifier_id.in_(classifierIds))
-        flash('%s ? (%s,%s).' % (str(profiles), classifierIds, len(classifierIds)), 'info')
 
     if name:
         profiles = profiles.filter(Person.name.like('%' + name + '%'))
