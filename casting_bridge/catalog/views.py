@@ -1085,6 +1085,27 @@ def photo_delete():
 
     return redirect(url_for('catalog.update_profile', id=person_id))
 
+@catalog.route('/photo-rotate')
+def photo_rotate():
+    if 'username' not in session:
+        return redirect(url_for('catalog.login'))
+
+    person_id = request.args.get('person_id')
+    photo_id = request.args.get('photo_id')
+    angle = request.args.get('angle', -90) # default: clockwise
+    angle = float(angle)
+    photo = Document.query.get_or_404(photo_id)
+    if photo.type != "photo":
+        return
+
+    im = Image.open(os.path.join(app.config['UPLOAD_FOLDER'] + "photo/", photo.name))
+    im = im.rotate(angle, 0, True)
+    im.save(os.path.join(app.config['UPLOAD_FOLDER'] + "photo/", photo.name), "JPEG")
+    # refresh thumbnails
+    photo_resize(os.path.join(app.config['UPLOAD_FOLDER'] + "photo/", photo.name), photo.name, 250, 375, False, "thumbnail/")
+
+    return redirect(url_for('catalog.update_profile', id=person_id))
+
 @catalog.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
