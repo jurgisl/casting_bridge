@@ -340,6 +340,10 @@ def thumbnail_dir(filename):
 def photo_dir(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'] + "photo/", filename, as_attachment=True)
 
+@app.route('/uploads/photo/preview/<path:filename>')
+def photo_direct_dir(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'] + "photo/", filename)
+
 def allowed_file(filename):
     return '.' in filename and \
             filename.lower().rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
