@@ -21,21 +21,17 @@
                             <a href="{{ url_for('photo_direct_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" target="_blank"><img src="{{ url_for('thumbnail_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" class="img-responsive"></a>
                             <p>{{ photo.created.strftime("%d-%m-%Y %H:%M:%S") }}</p>
                             <div class="caption">
-                                <a href="{{ url_for('photo_dir', filename=photo.name) }}">
-                                    <!--button type="button" class="btn btn-danger pull-right">Lejupielādēt</button-->
-                                    <p>Lejupielādēt</d>
+                                <a href="{{ url_for('photo_dir', filename=photo.name) }}" class="fa fa-download" aria-hidden="true">
+                                    Lejupielādēt
                                 </a>
-                                <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}" class="profile-image delete">
-                                    <!--button type="button" class="btn btn-danger pull-right">Dzēst</button-->
-                                    <p>Dzēst</d>
+                                <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}" class="profile-image delete fa fa-trash" aria-hidden="true">
+                                    Dzēst
                                 </a>
-                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=-90) }}" class="profile-image rotate">
-                                    <!--button type="button" class="btn btn-danger pull-right">Pagriezt pulksteņrādītāja virzienā</button-->
-                                    <p>Pagriezt pulksteņrādītāja virzienā</d>
+                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=-90) }}" class="profile-image rotate fa fa-repeat" aria-hidden="true">
+                                    Pagriezt pulksteņrādītāja virzienā
                                 </a>
-                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=90) }}" class="profile-image rotate">
-                                    <!--button type="button" class="btn btn-danger pull-right">Pagriezt pulksteņrādītāja virzienā</button-->
-                                    <p>Pagriezt pret-pulksteņrādītāja virzienā</d>
+                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=90) }}" class="profile-image rotate fa fa-undo" aria-hidden="true">
+                                    Pagriezt pret-pulksteņrādītāja virzienā
                                 </a>
                             </div>
                         </div>
