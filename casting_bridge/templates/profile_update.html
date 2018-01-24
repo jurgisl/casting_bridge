@@ -18,32 +18,24 @@
                 {% for photo in photos.items %}
                     <div class="col-md-3">
                         <div class="thumbnail">
-                            <a href="{{ url_for('photo_direct_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" target="_blank"><img src="{{ url_for('thumbnail_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" class="img-responsive"></a>
+                            <a href="{{ url_for('photo_direct_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" class="thumbnail-image" target="_blank" rel="profile-images" data-fancybox="profile-images" title="{{ photo.created.strftime('%d-%m-%Y %H:%M:%S') }}"><img src="{{ url_for('thumbnail_dir', filename=photo.name) }}?{{ photo.created.utcnow() }}" class="img-responsive"></a>
                             <p>{{ photo.created.strftime("%d-%m-%Y %H:%M:%S") }}</p>
                             <div class="caption">
-                                <a href="{{ url_for('photo_dir', filename=photo.name) }}">
-                                    <!--button type="button" class="btn btn-danger pull-right">Lejupielādēt</button-->
-                                    <p>Lejupielādēt</d>
+                                <a href="{{ url_for('photo_dir', filename=photo.name) }}" class="fa fa-download" aria-hidden="true">
+                                    Lejupielādēt
                                 </a>
-                                <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}" class="profile-image delete">
-                                    <!--button type="button" class="btn btn-danger pull-right">Dzēst</button-->
-                                    <p>Dzēst</d>
+                                <a href="{{ url_for('catalog.photo_delete', person_id=person.id, photo_id=photo.id) }}" class="profile-image delete fa fa-trash" aria-hidden="true">
+                                    Dzēst
                                 </a>
-                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=-90) }}" class="profile-image rotate">
-                                    <!--button type="button" class="btn btn-danger pull-right">Pagriezt pulksteņrādītāja virzienā</button-->
-                                    <p>Pagriezt pulksteņrādītāja virzienā</d>
+                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=-90) }}" class="profile-image rotate fa fa-repeat" aria-hidden="true">
+                                    Pagriezt pulksteņrādītāja virzienā
                                 </a>
-                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=90) }}" class="profile-image rotate">
-                                    <!--button type="button" class="btn btn-danger pull-right">Pagriezt pulksteņrādītāja virzienā</button-->
-                                    <p>Pagriezt pret-pulksteņrādītāja virzienā</d>
+                                <a href="{{ url_for('catalog.photo_rotate', person_id=person.id, photo_id=photo.id, angle=90) }}" class="profile-image rotate fa fa-undo" aria-hidden="true">
+                                    Pagriezt pret-pulksteņrādītāja virzienā
                                 </a>
                             </div>
                         </div>
                     </div>
-                {% if loop.index is divisibleby 4 %}
-                    </div> <!-- end row-->
-                    <div class="row">
-                {% endif %}
                 {% endfor %}
             </div> <!-- end row-->
             <!-- VIDEO listing -->
@@ -575,6 +567,29 @@
 
     $(document).on('ready', function() {
         $("#input-4").fileinput({showCaption: false});
+
+        $("[data-fancybox]").fancybox({
+            // Options will go here
+            // afterShow: function(){
+            //     test = this;
+            // },
+            afterLoad: function() {
+                this.outer
+                    .after($(this.element).siblings('.caption').eq(0).html());
+
+                $(this.outer).parent().find('.profile-image.delete').on('click', function(){
+                    return confirm('Vai tiešām vēlaties dzēst šo bildi?');
+                });
+
+                $(this.outer).parent().find('.profile-image.rotate').on('click', function(){
+                    return confirm('Vai tiešām vēlaties pagriezt šo bildi?');
+                });
+            },
+            helpers     : {
+                title   : { type : 'inside' },
+                buttons : {}
+            }
+        });
     });
 
 //    document.getElementById('links').onclick = function (event) {
