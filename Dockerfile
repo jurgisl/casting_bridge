@@ -25,13 +25,34 @@ RUN ln -s /usr/bin/wkhtmltopdf.sh /usr/local/bin/wkhtmltopdf
 
 WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y nginx \
+    && apt-get clean
+
+EXPOSE 80 443
+# Finished setting up Nginx
+
+# By default, allow unlimited file sizes, modify it to limit the file sizes
+# To have a maximum of 1 MB (Nginx's default) change the line to:
+# ENV NGINX_MAX_UPLOAD 1m
+ENV NGINX_MAX_UPLOAD 0
+
+# By default, Nginx listens on port 80.
+# To modify this, change LISTEN_PORT environment variable.
+# (in a Dockerfile or with an option for `docker run`)
+ENV LISTEN_PORT 80
+
+RUN rm /etc/nginx/sites-available/default
+# Copy the modified Nginx conf
+ADD nginx.conf /etc/nginx/sites-available/default
+
 # Expose ports
 #EXPOSE 80
-EXPOSE 8888
+#EXPOSE 8888
 EXPOSE 5000
 
 # Set the default command to execute    
 # when creating a new container
 # i.e. using CherryPy to serve the application
 #CMD python server.py
-CMD python run.py
+CMD service nginx start && python server.py
